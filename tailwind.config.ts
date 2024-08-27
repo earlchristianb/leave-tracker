@@ -5,11 +5,12 @@ const config: Config = {
   content: [
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/login.tsx",
   ],
   theme: {
     extend: {
       colors: {
-        darker: "#030712",
+        darker: "#040813",
         dark: "#111828",
         ligther: "#fcfdff",
         light: "#f8fafc",

@@ -5,6 +5,11 @@ import ThemeProvider from "@/providers/themeProvider";
 import cn from "@/utils/cn";
 import "@fortawesome/fontawesome-svg-core/styles.css"; // import Font Awesome CSS
 import { config } from "@fortawesome/fontawesome-svg-core";
+import { ReactqueryClientProvider } from "@/providers/ReactQueryClientProvider";
+import Navbar from "@/components/Navbar";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ToastContextProvider } from "@/providers/ToastProvider";
+import ToastList from "@/components/ToastList";
 config.autoAddCss = false;
 
 const inter = Inter({ subsets: ["latin"] });
@@ -19,16 +24,29 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Check if the current route is the login page
+
   return (
-    <html suppressHydrationWarning lang="en">
-      <body
-        className={cn(
-          inter.className,
-          `bg-white text-dark dark:bg-darker dark:text-white`,
-        )}
-      >
-        <ThemeProvider>{children}</ThemeProvider>
-      </body>
-    </html>
+    <ReactqueryClientProvider>
+      <html suppressHydrationWarning lang="en">
+        <body
+          className={cn(
+            inter.className,
+            `bg-white text-dark dark:bg-darker dark:text-white`,
+          )}
+        >
+          <ToastContextProvider>
+            <ThemeProvider>
+              <div className="flex h-screen w-full flex-col md:flex-row">
+                <Navbar />
+                <div className="h-screen w-full overflow-auto">{children}</div>
+                <ToastList />
+              </div>
+              <ReactQueryDevtools initialIsOpen={false} />
+            </ThemeProvider>
+          </ToastContextProvider>
+        </body>
+      </html>
+    </ReactqueryClientProvider>
   );
 }

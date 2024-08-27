@@ -8,7 +8,7 @@ type SwitchProps = {
 const Switch = (props: SwitchProps) => {
   const { value, handleSwitch } = props;
   return (
-    <label className="group relative flex items-center space-x-2 text-xl">
+    <label className="group relative flex items-center space-x-2 text-xl hover:cursor-pointer">
       <input
         type="checkbox"
         className="peer absolute left-1/2 h-auto w-full -translate-x-1/2 appearance-none rounded-md"

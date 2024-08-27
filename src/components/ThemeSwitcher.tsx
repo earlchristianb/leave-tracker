@@ -27,8 +27,7 @@ const ThemeSwitcher = () => {
   };
 
   return (
-    <div className="bg-background text-primary-green space-y-2 text-center">
-      The current theme is: {theme}
+    <div className="bg-background text-primary-green text-center">
       <br />
       <div className="flex w-full items-center justify-center space-x-2">
         <Switch
