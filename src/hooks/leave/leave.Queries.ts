@@ -29,5 +29,8 @@ export function useCreateLeaveMutation() {
         },
       );
     },
+    async onError(error) {
+      console.log("Error", error);
+    },
   });
 }

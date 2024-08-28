@@ -3,7 +3,7 @@ import {
   withAuth,
   getKindeServerSession,
 } from "@kinde-oss/kinde-auth-nextjs/server";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 export const GET = withAuth(async (req: NextRequest, context: any) => {
   const { getAccessTokenRaw } = getKindeServerSession();
@@ -49,14 +49,9 @@ export const POST = withAuth(async (req: NextRequest, context: any) => {
         },
       },
     );
-
     return NextResponse.json(leaveResponse.data, { status: 200 });
-  } catch (error) {
-    return NextResponse.json(
-      {
-        error: true,
-      },
-      { status: 400 },
-    );
+  } catch (error: any) {
+    console.log("ERROR from API", error.response.data.message);
+    return NextResponse.json(error.response.data, { status: 400 });
   }
 });

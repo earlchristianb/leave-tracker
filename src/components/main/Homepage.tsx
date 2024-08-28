@@ -18,12 +18,20 @@ import { useGetOrgLeaveTypeQuery } from "@/hooks/organization/organizationQuerie
 import Input from "../Input";
 import { useCreateToast } from "@/providers/ToastProvider";
 import { ToastMessages, ToastType } from "@/constants/toast.constants";
+import { Leave } from "@/types/leave.type";
 type LeaveFormState = {
   leaveTypeId: string;
   reason?: string;
   dates: string[];
   fileLink: string;
 };
+const emptyLeaveForm = {
+  leaveTypeId: "",
+  reason: "",
+  dates: [],
+  fileLink: "",
+};
+
 const Homepage = () => {
   const { isAuthenticated, getUser, getAccessTokenRaw, isLoading, getClaim } =
     useKindeBrowserClient();
@@ -43,12 +51,7 @@ const Homepage = () => {
     currentUser.data?.organization?.id,
   );
   const createLeave = useCreateLeaveMutation();
-  const [leaveForm, setLeaveForm] = useState<LeaveFormState>({
-    leaveTypeId: "",
-    reason: "",
-    dates: [],
-    fileLink: "",
-  });
+  const [leaveForm, setLeaveForm] = useState<LeaveFormState>(emptyLeaveForm);
 
   if (currentUser.isLoading || isLoading) {
     return (
@@ -82,6 +85,10 @@ const Homepage = () => {
     }));
   };
 
+  // const currentPage = 1;
+  // const itemsPerPage = 10;
+  // const correctIndex = (currentPage - 1) * itemsPerPage + index + 1;
+
   return (
     <div className="flex h-full w-full flex-col dark:bg-darker md:h-screen">
       <Topbar>
@@ -102,7 +109,7 @@ const Homepage = () => {
       <div className="flex h-full w-full flex-col items-center justify-center dark:bg-darker">
         <div className="flex h-[90%] w-full flex-col space-y-4 p-2">
           <div className="flex h-full flex-col border sm:flex-row">
-            <div className="flex h-full w-fit border-r sm:flex-col">
+            <div className="flex w-fit border-r sm:flex-col md:h-full">
               <Button
                 className="h-fit rounded-none text-left text-lg"
                 onClick={() => {
@@ -122,17 +129,75 @@ const Homepage = () => {
             </div>
             <div className="h-full w-full">
               {currentTab === "Leaves" ? (
-                <div className="flex flex-col justify-center space-y-4 rounded-md border p-4 dark:border-gray-400 dark:bg-dark">
-                  <p>Show the leaves here</p>
-                </div>
+                <section className="scrollbar-thin w-full text-left drop-shadow-2xl">
+                  <div className="w-full">
+                    <div className="relative w-full divide-gray-500 truncate rounded-lg text-center">
+                      <div className="flex items-center border-b dark:bg-dark dark:text-white">
+                        <p className="w-10 p-2"></p>
+                        <div
+                          className={`relative grid w-full grid-cols-2 place-items-center px-4 py-2 text-left md:grid-cols-4 lg:grid-cols-5`}
+                        >
+                          <p className="w-full">Type of leave</p>
+                          <p className="hidden w-full md:block">Filed Date</p>
+                          <p className="w-full">Dates</p>
+                          <p className="hidden w-full lg:block">Reason</p>
+                          <p className="hidden w-full md:block">File link</p>
+                        </div>
+                      </div>
+                      {getLeavesByUser.data &&
+                        getLeavesByUser.data.length &&
+                        getLeavesByUser.data.map((leave: Leave, index) => (
+                          <div
+                            className="flex w-full items-center transition duration-300 hover:cursor-pointer hover:bg-slate-100"
+                            onDoubleClick={() => {}}
+                          >
+                            <p
+                              className={`${!(index % 2 == 0) && `bg-transparent`} w-10 p-2`}
+                            >
+                              {/* {correctIndex} */}
+                              {index + 1}
+                            </p>
+                            <div
+                              key={index + 1}
+                              className={`relative grid w-full grid-cols-2 place-items-center p-2 text-left md:grid-cols-4 lg:grid-cols-5 ${
+                                !(index % 2 == 0) && "bg-transparent"
+                              }`}
+                            >
+                              <p className="w-full">
+                                {leave?.leaveType?.leaveName}
+                              </p>
+                              <p className="hidden w-full md:block">
+                                {new Date(
+                                  leave?.created_at,
+                                ).toLocaleDateString()}
+                              </p>
+                              <p className="hidden w-full lg:block">
+                                {leave.reason}
+                              </p>
+                              <p className="w-full">
+                                {leave.dates
+                                  .map((date) =>
+                                    new Date(date).toLocaleDateString(),
+                                  )
+                                  .join(", ")}
+                              </p>
+                              <p className="hidden w-full md:block">
+                                {leave?.fileLink}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                </section>
               ) : (
                 <Form
-                  className="rounded-none"
+                  className="h-auto rounded-none border-0 lg:space-y-6"
                   onSubmit={async (e) => {
                     e.preventDefault();
-                    if (!leaveForm.dates.length) {
-                      return alert("Please select a date");
-                    }
+                    // if (!leaveForm.dates.length) {
+                    //   return alert("Please select a date");
+                    // }
 
                     console.log("Form state", leaveForm);
                     try {
@@ -145,10 +210,14 @@ const Homepage = () => {
                         ToastType.SUCCESS,
                         ToastMessages.LEAVE.SUCCESS_CREATE,
                       );
-                    } catch (error) {
+                      setLeaveForm(emptyLeaveForm);
+                    } catch (error: any) {
+                      console.log(error.response.data);
                       createToast(
                         ToastType.ERROR,
-                        ToastMessages.LEAVE.ERROR_CREATE,
+                        Array.isArray(error.response.data.message)
+                          ? error.response.data.message[0]
+                          : error.response.data.message,
                       );
                     }
                   }}
