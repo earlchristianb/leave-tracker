@@ -18,7 +18,7 @@ const NavLink = ({
   return (
     <li
       className={cn(
-        `${pathname === href ? "bg-darker text-white dark:bg-white dark:text-black" : ""} w-full rounded-md border px-4 py-2 hover:bg-darker hover:text-white dark:border-0 dark:hover:bg-gray-200 dark:hover:text-black`,
+        `${pathname === href ? "border-b-2 border-darker font-semibold dark:border-light" : "bg-transparent"} w-full rounded-md px-4 py-2`,
         className,
       )}
     >

@@ -94,16 +94,16 @@ function OnboardingPage() {
 
   if (isFetching) {
     return (
-      <div className="flex h-full w-full flex-col justify-center dark:bg-dark md:h-screen md:items-center">
+      <div className="flex h-full w-full flex-col justify-center dark:bg-darker md:h-screen md:items-center">
         <p className="animate-bounce">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="flex h-full w-full flex-col dark:bg-darker md:h-screen">
+    <div className="dark:bg-darkest flex h-full w-full flex-col md:h-screen">
       <Topbar>New User Onboarding</Topbar>
-      <div className="flex h-full w-full flex-col items-center justify-center dark:bg-darker">
+      <div className="dark:bg-darkest flex h-full w-full flex-col items-center justify-center">
         <div className="flex h-[90%] w-full flex-col justify-center space-y-4 p-2 xl:w-[80%]">
           {currentUser.data?.accountSetup ? (
             <div className="flex h-full w-full flex-col items-center justify-center text-center">

@@ -5,8 +5,8 @@ import {
 } from "@kinde-oss/kinde-auth-nextjs/components";
 function LoginPage() {
   return (
-    <div className="m-auto flex h-screen w-full flex-col items-center justify-center bg-light dark:bg-darker">
-      <div className="flex w-72 flex-col space-y-5 rounded-md border bg-slate-50 px-4 py-8 shadow-xl dark:border-0 dark:bg-dark dark:text-light sm:w-80">
+    <div className="dark:bg-darkest m-auto flex h-screen w-full flex-col items-center justify-center bg-light">
+      <div className="flex w-72 flex-col space-y-5 rounded-md border bg-slate-50 px-4 py-8 shadow-xl dark:border-0 dark:bg-darker dark:text-light sm:w-80">
         <h1 className="text-center text-xl">Welcome! Login to continue 😊</h1>
         <div className="w-full">
           <LoginLink className="w-full" tabIndex={-1}>

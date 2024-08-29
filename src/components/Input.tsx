@@ -10,7 +10,7 @@ const Input = (props: InputProps) => {
     <input
       {...props}
       className={cn(
-        "w-full border-b border-dark p-1 dark:bg-gray-400",
+        "w-full border-b border-darker p-1 dark:bg-gray-400",
         className,
       )}
     />

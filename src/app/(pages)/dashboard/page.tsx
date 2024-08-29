@@ -4,7 +4,7 @@ import React from "react";
 
 function DashboardPage() {
   return (
-    <div className="flex h-screen w-full flex-col items-center dark:bg-dark">
+    <div className="flex h-screen w-full flex-col items-center dark:bg-darker">
       <Topbar>Dashboard</Topbar>
       <div className="flex h-[80%] flex-col space-y-4 p-2">
         <div>

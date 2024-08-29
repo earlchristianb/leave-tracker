@@ -32,7 +32,7 @@ export default function RootLayout({
         <body
           className={cn(
             inter.className,
-            `bg-white text-dark dark:bg-darker dark:text-white`,
+            `dark:bg-darkest bg-white text-darker dark:text-white`,
           )}
         >
           <ToastContextProvider>

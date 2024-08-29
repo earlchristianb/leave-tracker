@@ -18,20 +18,12 @@ import { useGetOrgLeaveTypeQuery } from "@/hooks/organization/organizationQuerie
 import Input from "../Input";
 import { useCreateToast } from "@/providers/ToastProvider";
 import { ToastMessages, ToastType } from "@/constants/toast.constants";
-import { Leave } from "@/types/leave.type";
-type LeaveFormState = {
-  leaveTypeId: string;
-  reason?: string;
-  dates: string[];
-  fileLink: string;
-};
-const emptyLeaveForm = {
-  leaveTypeId: "",
-  reason: "",
-  dates: [],
-  fileLink: "",
-};
-
+import LeavesTable from "./LeavesTable";
+import CreateLeaveForm from "../forms/create-leave.form";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAdd, faReceipt } from "@fortawesome/free-solid-svg-icons";
+import { PieChart } from "../Piechart";
+import { colorList } from "@/utils/colorlist";
 const Homepage = () => {
   const { isAuthenticated, getUser, getAccessTokenRaw, isLoading, getClaim } =
     useKindeBrowserClient();
@@ -39,23 +31,71 @@ const Homepage = () => {
   const [currentTab, setCurrentTab] = useState("Leaves");
   const user = getUser();
   const createToast = useCreateToast();
-  useEffect(() => {
-    if (!isAuthenticated && !isLoading) {
-      router.push("/login");
-    }
-  }, [isAuthenticated, isLoading]);
 
   const currentUser = useCurrentUserQuery(user?.id, user);
   const getLeavesByUser = useGetLeavesByUserQuery(currentUser.data?.id);
   const getLeaveTypes = useGetOrgLeaveTypeQuery(
     currentUser.data?.organization?.id,
   );
-  const createLeave = useCreateLeaveMutation();
-  const [leaveForm, setLeaveForm] = useState<LeaveFormState>(emptyLeaveForm);
+  const leaveLabels = useMemo(() => {
+    return getLeaveTypes.data?.map((leaveType) => leaveType.leaveName);
+  }, [getLeaveTypes.data]);
+  const handleToggle = (tab: string) => {
+    setCurrentTab(tab);
+  };
+
+  // const leaveData = useMemo(() => {
+  //   return leaveLabels?.map((leaveLabel) => {
+  //     return getLeavesByUser.data?.filter(
+  //       (leave) => leave.leaveType.leaveName === leaveLabel,
+  //     ).length;
+  //   });
+  // }, [leaveLabels, getLeavesByUser.data]);
+  const countLeaves = (leaveLabels: string[], leaves: any[]) => {
+    return leaveLabels?.map((leaveLabel) => {
+      return leaves
+        ?.filter((leave) => leave.leaveType.leaveName === leaveLabel)
+        .map((leave) => leave.dates)
+        .flat();
+    });
+  };
+
+  const countCurrentYearLeaves = (leaveData: any[], currentYear: number) => {
+    return leaveData.map((dates) => {
+      return (
+        dates?.filter(
+          (date: string) => new Date(date).getFullYear() === currentYear,
+        ).length || 0
+      );
+    });
+  };
+
+  const leaveData = useMemo(() => {
+    return countLeaves(leaveLabels || [], getLeavesByUser.data || []);
+  }, [leaveLabels, getLeavesByUser.data]);
+  const filteredLeaveData = useMemo(() => {
+    return (leaveData || []).map((data) => (data ? data.length : 0));
+  }, [leaveData]);
+  const currentYear = new Date().getFullYear();
+  const currentYearLeaveCounts = useMemo(() => {
+    return countCurrentYearLeaves(leaveData, currentYear);
+  }, [leaveData, currentYear]);
+  const leaveDataLength = useMemo(() => {
+    return leaveData?.flatMap((data) => data).length;
+  }, [leaveData]);
+  const backgroundColor = useMemo(() => {
+    return colorList.slice(0, leaveLabels?.length);
+  }, [leaveLabels?.length]);
+
+  useEffect(() => {
+    if (!isAuthenticated && !isLoading) {
+      router.push("/login");
+    }
+  }, [isAuthenticated, isLoading]);
 
   if (currentUser.isLoading || isLoading) {
     return (
-      <div className="flex min-h-screen w-full flex-col items-center justify-between bg-white dark:bg-dark">
+      <div className="flex min-h-screen w-full flex-col items-center justify-between bg-white dark:bg-darker">
         <p>Loading..</p>
       </div>
     );
@@ -69,28 +109,27 @@ const Homepage = () => {
   ) {
     router.push("/onboarding");
   }
-  const handleToggle = (tab: string) => {
-    setCurrentTab(tab);
-  };
-
-  const handleLeaveFormChange = (
-    e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>,
-  ) => {
-    setLeaveForm((prev) => ({
-      ...prev,
-      [e.target.name]:
-        e.target.name === "dates"
-          ? [...prev.dates, e.target.value]
-          : e.target.value,
-    }));
-  };
 
   // const currentPage = 1;
   // const itemsPerPage = 10;
   // const correctIndex = (currentPage - 1) * itemsPerPage + index + 1;
 
+  console.log("Leave labels", leaveLabels);
+  console.log("Leave data", leaveData);
+  console.log("Current Year leave counts", currentYearLeaveCounts);
+  console.log("All leaves", leaveDataLength);
+  const piechartData = {
+    labels: leaveLabels || [],
+    datasets: [
+      {
+        data: filteredLeaveData,
+        backgroundColor: backgroundColor || [],
+      },
+    ],
+  };
+
   return (
-    <div className="flex h-full w-full flex-col dark:bg-darker md:h-screen">
+    <div className="flex h-full w-full flex-col bg-lighter text-black dark:bg-darkest md:h-screen">
       <Topbar>
         <div className="flex items-center space-x-4">
           {user?.picture && (
@@ -103,206 +142,83 @@ const Homepage = () => {
             />
           )}
 
-          <p>Welcome!{currentUser.data?.name}</p>
+          <p>Hello {currentUser.data?.name}</p>
         </div>
       </Topbar>
-      <div className="flex h-full w-full flex-col items-center justify-center dark:bg-darker">
-        <div className="flex h-[90%] w-full flex-col space-y-4 p-2">
-          <div className="flex h-full flex-col border sm:flex-row">
-            <div className="flex w-fit border-r sm:flex-col md:h-full">
+      <div className="flex h-full w-full flex-col items-center bg-lightest dark:bg-dark">
+        <div className="flex w-full flex-col space-y-4">
+          <div className="flex h-52 p-2">
+            {leaveData && leaveLabels && (
+              <div className="h-52">
+                <PieChart data={piechartData} key="piechart1" />
+              </div>
+            )}
+            <div className="flex justify-center divide-x-2">
+              <div className="w-full">
+                <p className="text-xl font-bold">Total Leaves</p>
+                <div className="h-20 p-4 dark:bg-dark">
+                  <p>Leaves</p>
+                  <p>{leaveDataLength}</p>
+                </div>
+              </div>
+              <div className="w-full">
+                <p className="text-center text-xl font-bold">Current Year</p>
+                <div className="h-20 p-4 text-center">
+                  <p>Leaves</p>
+                  <p>
+                    {currentYearLeaveCounts.reduce(
+                      (sum, count) => sum + count,
+                      0,
+                    )}
+                  </p>
+                </div>
+                <div className="flex">
+                  {currentYearLeaveCounts &&
+                    leaveLabels &&
+                    leaveLabels.map((labels, index) => (
+                      <div className="h-30 p-4 text-center dark:bg-dark">
+                        <p>{labels}</p>
+                        <p>{currentYearLeaveCounts[index]}</p>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="h-full">
+            <div className="flex w-full">
               <Button
                 className="h-fit rounded-none text-left text-lg"
                 onClick={() => {
                   handleToggle("Leaves");
                 }}
               >
-                Leaves
+                <p className="flex items-center space-x-2">
+                  <FontAwesomeIcon icon={faReceipt} className="text-xl" />
+                  <span>Leaves</span>
+                </p>
               </Button>
               <Button
-                className="h-fit text-nowrap rounded-none text-left text-lg"
+                className="h-fit self-end text-nowrap rounded-none text-left text-lg"
                 onClick={() => {
                   handleToggle("Create Leaves");
                 }}
               >
-                File Leave
+                <p className="flex items-center space-x-2">
+                  <FontAwesomeIcon icon={faAdd} className="text-xl" />
+                  <span>File a Leave</span>
+                </p>
               </Button>
             </div>
             <div className="h-full w-full">
               {currentTab === "Leaves" ? (
-                <section className="scrollbar-thin w-full text-left drop-shadow-2xl">
-                  <div className="w-full">
-                    <div className="relative w-full divide-gray-500 truncate rounded-lg text-center">
-                      <div className="flex items-center border-b dark:bg-dark dark:text-white">
-                        <p className="w-10 p-2"></p>
-                        <div
-                          className={`relative grid w-full grid-cols-2 place-items-center px-4 py-2 text-left md:grid-cols-4 lg:grid-cols-5`}
-                        >
-                          <p className="w-full">Type of leave</p>
-                          <p className="hidden w-full md:block">Filed Date</p>
-                          <p className="w-full">Dates</p>
-                          <p className="hidden w-full lg:block">Reason</p>
-                          <p className="hidden w-full md:block">File link</p>
-                        </div>
-                      </div>
-                      {getLeavesByUser.data &&
-                        getLeavesByUser.data.length &&
-                        getLeavesByUser.data.map((leave: Leave, index) => (
-                          <div
-                            className="flex w-full items-center transition duration-300 hover:cursor-pointer hover:bg-slate-100"
-                            onDoubleClick={() => {}}
-                          >
-                            <p
-                              className={`${!(index % 2 == 0) && `bg-transparent`} w-10 p-2`}
-                            >
-                              {/* {correctIndex} */}
-                              {index + 1}
-                            </p>
-                            <div
-                              key={index + 1}
-                              className={`relative grid w-full grid-cols-2 place-items-center p-2 text-left md:grid-cols-4 lg:grid-cols-5 ${
-                                !(index % 2 == 0) && "bg-transparent"
-                              }`}
-                            >
-                              <p className="w-full">
-                                {leave?.leaveType?.leaveName}
-                              </p>
-                              <p className="hidden w-full md:block">
-                                {new Date(
-                                  leave?.created_at,
-                                ).toLocaleDateString()}
-                              </p>
-                              <p className="hidden w-full lg:block">
-                                {leave.reason}
-                              </p>
-                              <p className="w-full">
-                                {leave.dates
-                                  .map((date) =>
-                                    new Date(date).toLocaleDateString(),
-                                  )
-                                  .join(", ")}
-                              </p>
-                              <p className="hidden w-full md:block">
-                                {leave?.fileLink}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-                </section>
+                <LeavesTable getLeavesByUser={getLeavesByUser} />
               ) : (
-                <Form
-                  className="h-auto rounded-none border-0 lg:space-y-6"
-                  onSubmit={async (e) => {
-                    e.preventDefault();
-                    // if (!leaveForm.dates.length) {
-                    //   return alert("Please select a date");
-                    // }
-
-                    console.log("Form state", leaveForm);
-                    try {
-                      await createLeave.mutateAsync({
-                        body: leaveForm,
-                        userId: currentUser.data?.id!,
-                      });
-                      console.log("submitting");
-                      createToast(
-                        ToastType.SUCCESS,
-                        ToastMessages.LEAVE.SUCCESS_CREATE,
-                      );
-                      setLeaveForm(emptyLeaveForm);
-                    } catch (error: any) {
-                      console.log(error.response.data);
-                      createToast(
-                        ToastType.ERROR,
-                        Array.isArray(error.response.data.message)
-                          ? error.response.data.message[0]
-                          : error.response.data.message,
-                      );
-                    }
-                  }}
-                >
-                  <h1 className="text-xl">File Leave</h1>
-                  <div className="flex w-full flex-col justify-start space-y-2 p-2">
-                    <label>Leave Type*</label>
-                    <select
-                      className="w-full border-b border-dark p-1 dark:bg-gray-400"
-                      value={leaveForm.leaveTypeId}
-                      onChange={handleLeaveFormChange}
-                      name="leaveTypeId"
-                      required
-                    >
-                      {getLeaveTypes.data &&
-                        getLeaveTypes.data?.map((leaveType) => (
-                          <>
-                            <option key={leaveType.id} value={leaveType.id}>
-                              {leaveType.leaveName}
-                            </option>
-                          </>
-                        ))}
-                      <option key="defaultLeaveType" value="" disabled hidden>
-                        Select Leave Type
-                      </option>
-                    </select>
-                  </div>
-                  <div className="flex flex-col justify-start space-y-2 p-2">
-                    <label>Reason</label>
-                    <Input
-                      className="w-full border-b border-dark p-1 dark:bg-gray-400"
-                      type="text"
-                      name="reason"
-                      onChange={handleLeaveFormChange}
-                    />
-                  </div>
-                  <div className="flex flex-col justify-start space-y-2 p-2">
-                    <label>File Link</label>
-                    <Input
-                      className="w-full border-b border-dark p-1 dark:bg-gray-400"
-                      type="url"
-                      name="fileLink"
-                      required
-                      onChange={handleLeaveFormChange}
-                    />
-                  </div>
-                  <div className="flex flex-col justify-start space-y-2 p-2">
-                    <label>
-                      Dates{" "}
-                      <span className="text-gray-400">
-                        {leaveForm.dates &&
-                          leaveForm.dates.length > 0 &&
-                          `${leaveForm.dates.length} selected`}
-                      </span>
-                    </label>
-                    <Input
-                      className="w-full border-b border-dark p-1 dark:bg-gray-400"
-                      type="date"
-                      name="dates"
-                      onChange={handleLeaveFormChange}
-                    />
-                    <div className="flex">
-                      {leaveForm.dates.map((date) => (
-                        <p
-                          className="group flex space-x-1 p-2 duration-500 hover:cursor-pointer hover:bg-red-100"
-                          key={date}
-                          onClick={(e) =>
-                            setLeaveForm((prev) => ({
-                              ...prev,
-                              dates: prev.dates.filter(
-                                (selectedDates) => selectedDates !== date,
-                              ),
-                            }))
-                          }
-                        >
-                          <span>{date}</span>
-                          <span className="hidden text-red-500 group-hover:block">
-                            X
-                          </span>
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                  <Button type="submit">Submit</Button>
-                </Form>
+                <CreateLeaveForm
+                  currentUser={currentUser}
+                  getLeaveTypes={getLeaveTypes}
+                />
               )}
             </div>
           </div>

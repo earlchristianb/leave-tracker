@@ -11,7 +11,7 @@ const Button = ({ className, children, ...props }: ButtonProps) => {
     <button
       {...props}
       className={cn(
-        "rounded-md border bg-ligther p-2 text-xl transition duration-300 hover:bg-dark hover:text-light dark:border dark:border-gray-400 dark:bg-darker hover:dark:bg-light hover:dark:text-dark",
+        "bg-lighter dark:bg-darkest dark:text-lighter rounded-md p-2 text-xl transition duration-300 hover:bg-darker hover:text-light hover:dark:bg-light hover:dark:text-darker",
         className,
       )}
     >

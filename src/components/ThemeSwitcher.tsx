@@ -20,7 +20,7 @@ const ThemeSwitcher = () => {
   const displayTheme = isLightTheme ? darkTheme : lightTheme;
   const displayIcon = () => {
     return isLightTheme ? (
-      <FontAwesomeIcon icon={faSun} className="text-xl text-yellow-300" />
+      <FontAwesomeIcon icon={faSun} className="text-xl text-dark" />
     ) : (
       <FontAwesomeIcon icon={faMoon} className="text-xl" />
     );

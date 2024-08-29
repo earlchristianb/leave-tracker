@@ -8,7 +8,7 @@ const Form = ({ children, ...props }: FormProps) => {
     <form
       {...props}
       className={cn(
-        "flex flex-col justify-center space-y-4 rounded-md border p-4 dark:border-gray-400 dark:bg-dark",
+        "flex flex-col justify-center space-y-4 rounded-md border p-4 dark:border-gray-400 dark:bg-darker",
         props.className,
       )}
     >
