@@ -41,12 +41,9 @@ const UserTable = ({ users }: { users: UseQueryResult<User[], Error> }) => {
                   {/* {correctIndex} */}
                   {index + 1}
                 </p>
-
                 <Column>{user?.name}</Column>
-
                 <Column>{user?.email}</Column>
                 <Column>{user.role}</Column>
-
                 <Column>{user.team?.name}</Column>
                 <Column>
                   {new Date(user?.createdAt).toLocaleDateString()}
