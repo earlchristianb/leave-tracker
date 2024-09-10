@@ -30,6 +30,7 @@ const UserTable = ({ users }: { users: UseQueryResult<User[], Error> }) => {
             users.data.length &&
             users.data.map((user: User, index: number) => (
               <div
+                key={index}
                 className="group flex w-full flex-nowrap p-2 text-left transition duration-300 hover:cursor-pointer"
                 onDoubleClick={() => {
                   handleGoToEmployeeProfile(user.id);
