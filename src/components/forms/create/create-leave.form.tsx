@@ -1,13 +1,18 @@
 import React, { useState } from "react";
-import Form from "../Form";
+import Form from "../../Form";
 import { useCreateLeaveMutation } from "@/hooks/leave/leave.Queries";
 import { UseQueryResult } from "@tanstack/react-query";
 import { User } from "@/types/user.type";
 import { useCreateToast } from "@/providers/ToastProvider";
 import { ToastMessages, ToastType } from "@/constants/toast.constants";
 import { OrgLeaveType } from "@/types/organization.type";
-import Input from "../Input";
-import Button from "../Button";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import Input from "../../Input";
+import Button from "../../Button";
+import { faCalendar } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 type LeaveFormState = {
   leaveTypeId: string;
   reason?: string;
@@ -42,16 +47,30 @@ const CreateLeaveForm = ({
           : e.target.value,
     }));
   };
+
+  const handleDateChange = (
+    date: Date | null,
+    event?:
+      | React.MouseEvent<HTMLElement, MouseEvent>
+      | React.KeyboardEvent<HTMLElement>
+      | undefined,
+  ) => {
+    if (event?.type === "change") return;
+    if (!date) return;
+    date.setHours(12, 0, 0, 0);
+    if (leaveForm.dates.includes(date.toISOString().split("T")[0])) return;
+    setLeaveForm((prev) => ({
+      ...prev,
+      dates: [...prev.dates, date.toISOString().split("T")[0]],
+    }));
+  };
+  console.log(leaveForm.dates, "Leave Form");
   const createToast = useCreateToast();
   return (
     <Form
       className="h-auto rounded-none border-0 lg:space-y-6"
       onSubmit={async (e) => {
         e.preventDefault();
-        // if (!leaveForm.dates.length) {
-        //   return alert("Please select a date");
-        // }
-
         console.log("Form state", leaveForm);
         try {
           await createLeave.mutateAsync({
@@ -114,7 +133,7 @@ const CreateLeaveForm = ({
           onChange={handleLeaveFormChange}
         />
       </div>
-      <div className="flex flex-col justify-start space-y-2 p-2">
+      <div className="w-full space-y-2 p-2">
         <label>
           Dates{" "}
           <span className="text-gray-400">
@@ -123,16 +142,27 @@ const CreateLeaveForm = ({
               `${leaveForm.dates.length} selected`}
           </span>
         </label>
-        <Input
-          className="w-full border-b border-dark p-1 dark:bg-gray-400"
-          type="date"
-          name="dates"
-          onChange={handleLeaveFormChange}
-        />
+        <div className="relative flex w-full flex-col">
+          <DatePicker
+            todayButton={
+              <p className="text-blue-300 dark:text-gray-900">{`Select Today's Date`}</p>
+            }
+            calendarIconClassName="dark:text-white"
+            showIcon={true}
+            icon={<FontAwesomeIcon icon={faCalendar} />}
+            className="flex w-full items-center border-b border-dark text-center placeholder:text-black dark:bg-gray-400 placeholder:dark:text-white"
+            name="dates"
+            dateFormat={"yyyy-MM-dd"}
+            disabledKeyboardNavigation
+            placeholderText="Select Dates here"
+            onChange={handleDateChange}
+          />
+        </div>
+
         <div className="flex">
           {leaveForm.dates.map((date) => (
             <p
-              className="group flex space-x-1 p-2 duration-500 hover:cursor-pointer hover:bg-red-100"
+              className="group flex items-center space-x-1 p-2 duration-500 hover:cursor-pointer hover:bg-light dark:text-white dark:hover:bg-dark"
               key={date}
               onClick={(e) =>
                 setLeaveForm((prev) => ({
@@ -144,7 +174,9 @@ const CreateLeaveForm = ({
               }
             >
               <span>{date}</span>
-              <span className="hidden text-red-500 group-hover:block">X</span>
+              <span className="hidden text-sm text-red-500 group-hover:block dark:text-white">
+                X
+              </span>
             </p>
           ))}
         </div>

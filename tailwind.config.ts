@@ -13,7 +13,7 @@ const config: Config = {
         dark: "#767693",
         darker: "#2e2e3a",
         darkest: "#1b1b22",
-        light: "#57604f",
+        light: "#aeb7a7",
         lighter: "#dce0d9",
         lightest: "#f1f2ef",
         platinum: {

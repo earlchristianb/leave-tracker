@@ -1,25 +1,35 @@
 import { queryClient } from "@/providers/ReactQueryClientProvider";
 import {
-  createOrganization,
-  createOrgLeaveType,
-  getOrganization,
-  getOrganizations,
-  getOrgLeaveType,
-  joinOrganization,
+  createOrganizationService,
+  createOrgLeaveTypeService,
+  getAllOrganizationsService,
+  getOrganizationService,
+  getOrgLeaveTypeService,
+  joinOrganizationService,
+  updateOrganizationService,
 } from "@/services/organization.services";
 import {
   CreateOrganizationDto,
   CreateOrgLeaveTypeDto,
   Organization,
   OrgLeaveType,
+  UpdateOrganizationDto,
 } from "@/types/organization.type";
 import { User } from "@/types/user.type";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
+export function useGetOrganizationQuery(organizationId: string | undefined) {
+  return useQuery({
+    queryKey: ["organization", organizationId],
+    queryFn: async () => getOrganizationService(organizationId!),
+    enabled: !!organizationId,
+  });
+}
+
 export function useOrganizationsQuery() {
   return useQuery({
     queryKey: ["organizations"],
-    queryFn: async () => getOrganizations(),
+    queryFn: async () => getAllOrganizationsService(),
     retry: 3,
   });
 }
@@ -27,7 +37,7 @@ export function useOrganizationsQuery() {
 export function useCreateOrgMutation() {
   return useMutation({
     mutationFn: async (variables: CreateOrganizationDto) =>
-      createOrganization(variables),
+      createOrganizationService(variables),
     async onSuccess(data: Organization) {
       queryClient.setQueryData(["currentUser"], (cachedData: User) => {
         console.log("cachedData", cachedData);
@@ -48,7 +58,7 @@ export function useCreateOrgMutation() {
 export function useJoinOrgMutation() {
   return useMutation({
     mutationFn: async (variables: { inviteCode: string }) =>
-      joinOrganization(variables.inviteCode),
+      joinOrganizationService(variables.inviteCode),
     async onSuccess(data: User) {
       queryClient.invalidateQueries({
         queryKey: ["organizations"],
@@ -61,10 +71,22 @@ export function useJoinOrgMutation() {
   });
 }
 
+export function useUpdateOrgMutation() {
+  return useMutation({
+    mutationFn: async (variables: {
+      organizationId: string;
+      data: UpdateOrganizationDto;
+    }) => updateOrganizationService(variables),
+    async onSuccess(data: Organization) {
+      await queryClient.setQueryData(["organization", data.id], data);
+    },
+  });
+}
+
 export function useGetOrgLeaveTypeQuery(organizationId: string | undefined) {
   return useQuery({
     queryKey: ["orgleaveType", organizationId],
-    queryFn: async () => getOrgLeaveType(organizationId!),
+    queryFn: async () => getOrgLeaveTypeService(organizationId!),
     enabled: !!organizationId,
   });
 }
@@ -74,7 +96,7 @@ export function useCreateOrgLeaveTypeMutation() {
     mutationFn: async (variables: {
       organizationId: string;
       body: CreateOrgLeaveTypeDto;
-    }) => createOrgLeaveType(variables.organizationId, variables.body),
+    }) => createOrgLeaveTypeService(variables.organizationId, variables.body),
     async onSuccess(
       data: OrgLeaveType,
       variables: { organizationId: string; body: CreateOrgLeaveTypeDto },

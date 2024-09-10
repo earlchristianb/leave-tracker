@@ -1,15 +1,13 @@
-import {
-  useJoinTeamMutation,
-  useTeamsByOrgQuery,
-} from "@/hooks/team/teamQueries";
-import React, { FormEvent, ReactElement } from "react";
+import { useJoinTeamMutation } from "@/hooks/team/teamQueries";
+import React from "react";
 import { Team } from "@/types/team.type";
 import { UseQueryResult } from "@tanstack/react-query";
 import { User } from "@/types/user.type";
 import { ToastMessages, ToastType } from "@/constants/toast.constants";
 import { useCreateToast } from "@/providers/ToastProvider";
-import Button from "../Button";
-import Form from "../Form";
+import Button from "../../Button";
+import Form from "../../Form";
+
 const JoinTeamForm = ({
   currentUser,
   teamsQuery,

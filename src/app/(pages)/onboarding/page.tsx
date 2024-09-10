@@ -1,37 +1,33 @@
 "use client";
 import Button from "@/components/Button";
-import CreateOrganizationForm from "@/components/forms/create-organization.form";
-import ProfileForm from "@/components/forms/profile.form";
-import Topbar from "@/components/Topbar";
+import CreateOrganizationForm from "@/components/forms/create/create-organization.form";
+import ProfileForm from "@/components/forms/create/profile.form";
+import TopBar from "@/components/TopBar";
 import { UserRole } from "@/enums";
 import { useCurrentUserQuery } from "@/hooks/user/userQueries";
 import {
   useGetOrgLeaveTypeQuery,
-  useJoinOrgMutation,
   useOrganizationsQuery,
 } from "@/hooks/organization/organizationQueries";
-import {
-  useJoinTeamMutation,
-  useTeamsByOrgQuery,
-} from "@/hooks/team/teamQueries";
+import { useTeamsByOrgQuery } from "@/hooks/team/teamQueries";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { useIsFetching } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import CreateTeamForm from "@/components/forms/create-team.form";
+import CreateTeamForm from "@/components/forms/create/create-team.form";
 import { useCreateToast } from "@/providers/ToastProvider";
-import { ToastMessages, ToastType } from "@/constants/toast.constants";
-import JoinTeamForm from "@/components/forms/join-team.form";
-import Input from "@/components/Input";
-import CreateOrgLeaveTypeForm from "@/components/forms/create-leavetype.form";
-import Form from "@/components/Form";
-import JoinOrganizationForm from "@/components/forms/join-organization.form";
+import JoinTeamForm from "@/components/forms/update/join-team.form";
+import CreateOrgLeaveTypeForm from "@/components/forms/create/create-leavetype.form";
+import JoinOrganizationForm from "@/components/forms/update/join-organization.form";
+
 enum Tabs {
   Profile = "Profile",
   Organization = "Organization",
   Team = "Team",
 }
+
 type Tab = keyof typeof Tabs;
+
 function OnboardingPage() {
   const router = useRouter();
   const createToast = useCreateToast();
@@ -101,9 +97,9 @@ function OnboardingPage() {
   }
 
   return (
-    <div className="dark:bg-darkest flex h-full w-full flex-col md:h-screen">
-      <Topbar>New User Onboarding</Topbar>
-      <div className="dark:bg-darkest flex h-full w-full flex-col items-center justify-center">
+    <div className="flex h-full w-full flex-col dark:bg-darkest md:h-screen">
+      <TopBar>New User Onboarding</TopBar>
+      <div className="flex h-full w-full flex-col items-center justify-center dark:bg-darkest">
         <div className="flex h-[90%] w-full flex-col justify-center space-y-4 p-2 xl:w-[80%]">
           {currentUser.data?.accountSetup ? (
             <div className="flex h-full w-full flex-col items-center justify-center text-center">

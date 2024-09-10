@@ -3,11 +3,12 @@ import { Team } from "@/types/team.type";
 import { User } from "@/types/user.type";
 import { UseQueryResult } from "@tanstack/react-query";
 import { useState } from "react";
-import Button from "../Button";
-import Input from "../Input";
+import Button from "../../Button";
+import Input from "../../Input";
 import { useCreateToast } from "@/providers/ToastProvider";
 import { ToastMessages, ToastType } from "@/constants/toast.constants";
-import Form from "../Form";
+import Form from "../../Form";
+
 const teamEmptyState = {
   name: "",
   description: "",

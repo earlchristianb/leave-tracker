@@ -1,22 +1,35 @@
 "use client";
 import React, { useState } from "react";
 
-import Input from "../Input";
-import Button from "../Button";
-import { useCreateOrgMutation } from "@/hooks/organization/organizationQueries";
+import Input from "../../Input";
+import Button from "../../Button";
 import { useCreateToast } from "@/providers/ToastProvider";
 import { ToastMessages, ToastType } from "@/constants/toast.constants";
-import Form from "../Form";
+import Form from "../../Form";
+import { useUpdateOrgMutation } from "@/hooks/organization/organizationQueries";
 
-const CreateOrganizationForm = () => {
+const UpdateOrganizationForm = ({
+  name,
+  driveLink,
+  inviteCode,
+  description,
+  id,
+}: {
+  name: string;
+  driveLink: string;
+  inviteCode: string;
+  description: string;
+  id: string;
+}) => {
   const createToast = useCreateToast();
 
   const [organizationForm, setOrganizationForm] = useState({
-    name: "",
-    driveLink: "",
-    inviteCode: "",
-    description: "",
+    name: name,
+    driveLink: driveLink,
+    inviteCode: inviteCode,
+    description: description,
   });
+  const updateOrgMutation = useUpdateOrgMutation();
   const handleOrganizationFormChanges = (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -25,22 +38,30 @@ const CreateOrganizationForm = () => {
       [e.target.name]: e.target.value,
     }));
   };
-  const createOrgMutation = useCreateOrgMutation();
+
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Form state", organizationForm);
     console.log("submitting");
     try {
-      await createOrgMutation.mutateAsync(organizationForm);
-      createToast(ToastType.SUCCESS, ToastMessages.ORGANIZATION.SUCCESS_CREATE);
-    } catch (error) {
-      createToast(ToastType.ERROR, ToastMessages.ORGANIZATION.ERROR_CREATE);
+      await updateOrgMutation.mutateAsync({
+        organizationId: id,
+        data: organizationForm,
+      });
+      createToast(ToastType.SUCCESS, ToastMessages.ORGANIZATION.SUCCESS_UPDATE);
+    } catch (error: any) {
+      createToast(
+        ToastType.ERROR,
+        Array.isArray(error?.response.data.message)
+          ? error.response.data.message[0]
+          : error.response.data.message,
+      );
     }
   };
 
   return (
     <Form onSubmit={handleFormSubmit}>
-      <h1 className="text-xl">Create an Organization</h1>
+      <h1 className="text-xl">Update Organization</h1>
       <div className="flex flex-col justify-start space-y-2 p-2">
         <label>Name*</label>
         <Input
@@ -93,4 +114,4 @@ const CreateOrganizationForm = () => {
   );
 };
 
-export default CreateOrganizationForm;
+export default UpdateOrganizationForm;

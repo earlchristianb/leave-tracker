@@ -12,7 +12,10 @@ export const GET = withAuth(async (req: NextRequest, context: any) => {
   const userId = searchParams.get("userId");
   try {
     const leaveResponse = await axios.get(
-      `${process.env.BACKEND_URL}/leave?userId=${userId}`,
+      userId
+        ? `${process.env.BACKEND_URL}/leave?userId=${userId}`
+        : `${process.env.BACKEND_URL}/leave`,
+
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,

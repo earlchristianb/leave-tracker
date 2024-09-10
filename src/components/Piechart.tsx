@@ -1,10 +1,10 @@
 import { Pie } from "react-chartjs-2";
 import {
-  Chart as ChartJS,
-  Tooltip,
-  Legend,
   ArcElement,
+  Chart as ChartJS,
   ChartOptions,
+  Legend,
+  Tooltip,
 } from "chart.js";
 
 type chartData = {
@@ -23,6 +23,9 @@ export const PieChart = ({ data }: { data: chartData }) => {
     plugins: {
       legend: {
         position: "bottom",
+        labels: {
+          color: "white", // Set legend text color to white
+        },
       },
       title: {
         display: true,

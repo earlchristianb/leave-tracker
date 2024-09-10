@@ -1,12 +1,8 @@
-import { queryClient } from "@/providers/ReactQueryClientProvider";
-import { User } from "@/types/user.type";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import React, { useEffect } from "react";
-import Button from "../Button";
-import Input from "../Input";
-import Form from "../Form";
+import Button from "../../Button";
+import Input from "../../Input";
+import Form from "../../Form";
 import { useCreateUserMutation } from "@/hooks/user/userQueries";
 import { useCreateToast } from "@/providers/ToastProvider";
 import { ToastMessages, ToastType } from "@/constants/toast.constants";

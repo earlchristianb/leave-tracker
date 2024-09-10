@@ -1,16 +1,19 @@
-import {
-  CreateLeaveDto,
-  CreateLeaveDtoVariable,
-  Leave,
-} from "@/types/leave.type";
+import { CreateLeaveDtoVariable, Leave } from "@/types/leave.type";
 import axios from "axios";
 
-export const getLeavesByUser = async (userId: string): Promise<Leave[]> => {
-  return (await axios.get(`/api/leave?userId=${userId}`)).data;
+const BASE_URL = "/api/leave";
+export const getAllLeavesService = async (): Promise<Leave[]> => {
+  return (await axios.get(BASE_URL)).data;
 };
-export const createLeave = async ({
+
+export const getLeavesByUserService = async (
+  userId: string,
+): Promise<Leave[]> => {
+  return (await axios.get(`${BASE_URL}?userId=${userId}`)).data;
+};
+export const createLeaveService = async ({
   userId,
   body,
 }: CreateLeaveDtoVariable): Promise<Leave> => {
-  return (await axios.post(`/api/leave?userId=${userId}`, body)).data;
+  return (await axios.post(`${BASE_URL}?userId=${userId}`, body)).data;
 };

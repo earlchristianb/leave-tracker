@@ -54,6 +54,6 @@ export const ToastMessages = Object.freeze({
     ERROR_UPDATE: "Error updating leave.",
     ERROR_DELETE: "Error deleting leave.",
   },
-
   ERROR_DEFAULT: "Something went wrong.",
+  SUCCESS_DEFAULT: "Success.",
 });

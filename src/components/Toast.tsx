@@ -1,6 +1,6 @@
 /** @format */
 "use client";
-import { ToastType } from "@/constants/toast.constants";
+import { ToastDuration, ToastType } from "@/constants/toast.constants";
 import React, { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -25,7 +25,7 @@ const CustomToast = ({
   useEffect(() => {
     setTimeout(() => {
       removeToast(toastId);
-    }, 5000);
+    }, ToastDuration);
   }, []);
 
   const getToastDesign = (type: string) => {

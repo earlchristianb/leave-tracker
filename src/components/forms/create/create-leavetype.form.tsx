@@ -1,12 +1,12 @@
 "use client";
 import React, { useState } from "react";
 
-import Input from "../Input";
-import Button from "../Button";
+import Input from "../../Input";
+import Button from "../../Button";
 import { useCreateOrgLeaveTypeMutation } from "@/hooks/organization/organizationQueries";
 import { useCreateToast } from "@/providers/ToastProvider";
 import { ToastMessages, ToastType } from "@/constants/toast.constants";
-import Form from "../Form";
+import Form from "../../Form";
 import { CreateOrgLeaveTypeDto, OrgLeaveType } from "@/types/organization.type";
 import { UseQueryResult } from "@tanstack/react-query";
 import { User } from "@/types/user.type";

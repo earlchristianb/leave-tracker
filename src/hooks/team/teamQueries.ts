@@ -1,8 +1,8 @@
 import { queryClient } from "@/providers/ReactQueryClientProvider";
 import {
-  addTeam,
-  getTeamsByOrganization,
-  joinTeam,
+  addTeamService,
+  getTeamsByOrganizationService,
+  joinTeamService,
 } from "@/services/teams.services";
 import { CreateTeamDto, JoinTeamDto } from "@/types/team.type";
 import { User } from "@/types/user.type";
@@ -11,7 +11,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 export const useTeamsByOrgQuery = (organizationId: string | undefined) => {
   return useQuery({
     queryKey: ["teams", organizationId],
-    queryFn: async () => getTeamsByOrganization(organizationId),
+    queryFn: async () => getTeamsByOrganizationService(organizationId),
     enabled: !!organizationId,
     retry: 3,
   });
@@ -22,7 +22,7 @@ export const useAddTeamMutation = () => {
     mutationFn: async (variables: {
       organizationId: string | undefined;
       teamData: CreateTeamDto;
-    }) => addTeam(variables.organizationId, variables.teamData),
+    }) => addTeamService(variables.organizationId, variables.teamData),
     onSuccess(data, variables, context) {
       queryClient.setQueryData(
         ["teams", variables.organizationId],
@@ -41,7 +41,7 @@ export const useAddTeamMutation = () => {
 
 export const useJoinTeamMutation = () => {
   return useMutation({
-    mutationFn: async (variables: JoinTeamDto) => joinTeam(variables),
+    mutationFn: async (variables: JoinTeamDto) => joinTeamService(variables),
     async onSuccess(data: User, variables: JoinTeamDto, context) {
       console.log("Joined team", data);
       queryClient.setQueryData(["currentUser"], (oldData: User) => {

@@ -7,7 +7,7 @@ import ThemeSwitcher from "./ThemeSwitcher";
 import NavLink from "./Link";
 import Button from "./Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDashboard, faHome } from "@fortawesome/free-solid-svg-icons";
+import { faCog, faDashboard, faHome } from "@fortawesome/free-solid-svg-icons";
 
 const Navbar = async () => {
   const { getPermission, isAuthenticated } = getKindeServerSession();
@@ -17,7 +17,7 @@ const Navbar = async () => {
     return null;
   }
   return (
-    <nav className="dark:text-lighter bg-lighter flex h-auto w-full text-black dark:border-0 dark:bg-darker md:w-auto md:items-center">
+    <nav className="flex h-auto w-full bg-lighter text-black shadow-2xl dark:border-0 dark:bg-darker dark:text-lighter md:w-auto md:items-center">
       <div className="flex h-[80%] w-full flex-col items-start justify-start rounded-md p-2 md:items-center md:justify-between md:p-4">
         <ul className="w-full p-2 md:p-4">
           <NavLink className="w-full" href="/">
@@ -26,13 +26,21 @@ const Navbar = async () => {
               <span>Home</span>
             </p>
           </NavLink>
-          {isAdmin && (
-            <NavLink className="w-full" href="/dashboard">
-              <p className="flex space-x-2">
-                <FontAwesomeIcon icon={faDashboard} className="text-xl" />
-                <span>Dashboard</span>
-              </p>
-            </NavLink>
+          {isAdmin?.isGranted && (
+            <>
+              <NavLink className="w-full" href="/dashboard">
+                <p className="flex space-x-2">
+                  <FontAwesomeIcon icon={faDashboard} className="text-xl" />
+                  <span>Dashboard</span>
+                </p>
+              </NavLink>
+              <NavLink className="w-full" href="/settings">
+                <p className="flex space-x-2">
+                  <FontAwesomeIcon icon={faCog} className="text-xl" />
+                  <span>Settings</span>
+                </p>
+              </NavLink>
+            </>
           )}
         </ul>
 

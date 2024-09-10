@@ -1,9 +1,8 @@
-import { Organization } from "@/types/organization.type";
 import { CreateTeamDto, JoinTeamDto, Team } from "@/types/team.type";
 import { User } from "@/types/user.type";
 import axios from "axios";
 
-export const getTeamsByOrganization = async (
+export const getTeamsByOrganizationService = async (
   organizationId: string | undefined,
 ): Promise<Team[]> => {
   const response = await axios.get(
@@ -12,12 +11,12 @@ export const getTeamsByOrganization = async (
   return response.data;
 };
 
-export const getTeam = async (teamId: string) => {
+export const getTeamService = async (teamId: string) => {
   const response = await axios.get(`/api/team/${teamId}`);
   return response.data;
 };
 
-export const addTeam = async (
+export const addTeamService = async (
   organizationId: string | undefined,
   body: CreateTeamDto,
 ) => {
@@ -28,7 +27,7 @@ export const addTeam = async (
   return response.data;
 };
 
-export const joinTeam = async (body: JoinTeamDto): Promise<User> => {
+export const joinTeamService = async (body: JoinTeamDto): Promise<User> => {
   const response = await axios.post(`/api/team/${body.teamId}`, body.body);
   return response.data;
 };

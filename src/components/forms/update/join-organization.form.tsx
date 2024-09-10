@@ -1,10 +1,10 @@
 import React from "react";
-import Form from "../Form";
-import Input from "../Input";
+import Form from "../../Form";
+import Input from "../../Input";
 import { ToastMessages, ToastType } from "@/constants/toast.constants";
 import { useCreateToast } from "@/providers/ToastProvider";
 import { useJoinOrgMutation } from "@/hooks/organization/organizationQueries";
-import Button from "../Button";
+import Button from "../../Button";
 
 const JoinOrganizationForm = () => {
   const [inviteCode, setInviteCode] = React.useState("");

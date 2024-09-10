@@ -1,16 +1,24 @@
 import { queryClient } from "@/providers/ReactQueryClientProvider";
-import { createLeave, getLeavesByUser } from "@/services/leave.services";
 import {
-  CreateLeaveDto,
-  CreateLeaveDtoVariable,
-  Leave,
-} from "@/types/leave.type";
+  createLeaveService,
+  getAllLeavesService,
+  getLeavesByUserService,
+} from "@/services/leave.services";
+import { CreateLeaveDtoVariable, Leave } from "@/types/leave.type";
 import { useMutation, useQuery } from "@tanstack/react-query";
+
+export function useGetAllLeavesQuery() {
+  return useQuery({
+    queryKey: ["all_leaves"],
+    queryFn: async () => getAllLeavesService(),
+    retry: 3,
+  });
+}
 
 export function useGetLeavesByUserQuery(userId: string | undefined) {
   return useQuery({
     queryKey: ["leaves", userId],
-    queryFn: async () => getLeavesByUser(userId!),
+    queryFn: async () => getLeavesByUserService(userId!),
     enabled: !!userId,
     retry: 3,
   });
@@ -19,7 +27,7 @@ export function useGetLeavesByUserQuery(userId: string | undefined) {
 export function useCreateLeaveMutation() {
   return useMutation({
     mutationFn: async (variables: CreateLeaveDtoVariable) =>
-      createLeave(variables),
+      createLeaveService(variables),
     async onSuccess(data: Leave, variables: CreateLeaveDtoVariable) {
       console.log("Creation Data", data);
       await queryClient.setQueryData(

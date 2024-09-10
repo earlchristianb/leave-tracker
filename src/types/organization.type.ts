@@ -18,6 +18,8 @@ export type CreateOrganizationDto = {
   description: string;
 };
 
+export type UpdateOrganizationDto = Partial<CreateOrganizationDto>;
+
 export type OrgLeaveType = {
   id: string;
   leaveName: string;
