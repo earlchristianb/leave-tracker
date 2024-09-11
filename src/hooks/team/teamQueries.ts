@@ -3,8 +3,14 @@ import {
   addTeamService,
   getTeamsByOrganizationService,
   joinTeamService,
+  updateTeamService,
 } from "@/services/teams.services";
-import { CreateTeamDto, JoinTeamDto } from "@/types/team.type";
+import {
+  CreateTeamDto,
+  JoinTeamDto,
+  Team,
+  UpdateTeamDto,
+} from "@/types/team.type";
 import { User } from "@/types/user.type";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -23,8 +29,8 @@ export const useAddTeamMutation = () => {
       organizationId: string | undefined;
       teamData: CreateTeamDto;
     }) => addTeamService(variables.organizationId, variables.teamData),
-    onSuccess(data, variables, context) {
-      queryClient.setQueryData(
+    async onSuccess(data, variables, context) {
+      await queryClient.setQueryData(
         ["teams", variables.organizationId],
         (oldData: any) => {
           return [...oldData, data];
@@ -50,6 +56,33 @@ export const useJoinTeamMutation = () => {
     },
     onError(error, variables, context) {
       console.log("Error joining team", error);
+    },
+  });
+};
+
+export const useUpdateTeamMutation = () => {
+  return useMutation({
+    mutationFn: async (variables: {
+      id: string;
+      body: UpdateTeamDto;
+      organizationId: string;
+    }) => updateTeamService(variables.id, variables.body),
+    async onSuccess(data, variables, context) {
+      console.log("Updated team", data);
+      await queryClient.setQueryData(
+        ["teams", variables.organizationId],
+        (oldData: any) => {
+          return oldData.map((team: Team) => {
+            if (team.id === variables.id) {
+              return { ...team, ...variables.body };
+            }
+            return team;
+          });
+        },
+      );
+    },
+    onError(error, variables, context) {
+      console.log("Error updating team", error);
     },
   });
 };

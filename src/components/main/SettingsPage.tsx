@@ -6,7 +6,7 @@ import {
 } from "@/hooks/organization/organizationQueries";
 import { useCurrentUserQuery } from "@/hooks/user/userQueries";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import { faAdd, faEdit } from "@fortawesome/free-solid-svg-icons";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { useIsFetching } from "@tanstack/react-query";
 import React from "react";
@@ -18,6 +18,8 @@ import OrgDetails from "@/components/details/OrgDetails";
 import TeamDetails from "@/components/details/TeamDetails";
 import LeaveTypesDetails from "@/components/details/LeaveTypesDetails";
 import UpdateOrganizationForm from "@/components/forms/update/update-organization.form";
+import UpdateTeamForm from "@/components/forms/update/update-team.form";
+import CreateTeamForm from "@/components/forms/create/create-team.form";
 
 const Tabs = {
   Organization: "Organization",
@@ -36,6 +38,7 @@ function SettingsPage() {
     Tabs.Organization,
   );
   const [isEditing, setIsEditing] = React.useState(false);
+  const [isAdding, setIsAdding] = React.useState(false);
   const { getUser } = useKindeBrowserClient();
 
   const isFetching = useIsFetching();
@@ -52,6 +55,9 @@ function SettingsPage() {
 
   const handleToggleEdit = () => {
     setIsEditing((prev) => !prev);
+  };
+  const handleToggleAdd = () => {
+    setIsAdding((prev) => !prev);
   };
   if (isFetching) {
     return (
@@ -92,12 +98,24 @@ function SettingsPage() {
                 Leave Types
               </button>
             </nav>
-            <Button onClick={handleToggleEdit}>
-              <p className="flex items-center space-x-2 text-sm">
-                <FontAwesomeIcon icon={faEdit} />
-                <span>Edit</span>
-              </p>
-            </Button>
+            <div>
+              {(currentTab === Tabs.Teams ||
+                currentTab === Tabs.LeaveTypes) && (
+                <Button onClick={handleToggleAdd}>
+                  <p className="flex items-center space-x-2 text-sm">
+                    <FontAwesomeIcon icon={faAdd} />
+                    <span>Add</span>
+                  </p>
+                </Button>
+              )}
+
+              <Button onClick={handleToggleEdit}>
+                <p className="flex items-center space-x-2 text-sm">
+                  <FontAwesomeIcon icon={faEdit} />
+                  <span>Edit</span>
+                </p>
+              </Button>
+            </div>
           </div>
 
           {
@@ -134,37 +152,59 @@ function SettingsPage() {
             // Teams
             currentTab === Tabs.Teams && (
               <>
-                <HeaderSection text={Tabs.Teams} />
                 {teamsQuery.isSuccess &&
                   currentTab === Tabs.Teams &&
                   teamsQuery?.data &&
                   teamsQuery?.data.length > 0 &&
-                  teamsQuery.data.map((team, index) => (
-                    <TeamDetails
-                      key={index}
-                      name={team.name}
-                      description={team.description}
-                      abbreviation={team.abbreviation}
+                  (isEditing ? (
+                    <UpdateTeamForm
+                      currentUser={currentUser}
+                      teamList={teamsQuery.data}
                     />
+                  ) : isAdding ? (
+                    <CreateTeamForm
+                      currentUser={currentUser}
+                      teamsQuery={teamsQuery}
+                    />
+                  ) : (
+                    <>
+                      <HeaderSection text={Tabs.Teams} />
+                      {teamsQuery.data.map((team, index) => (
+                        <TeamDetails
+                          key={index}
+                          name={team.name}
+                          description={team.description}
+                          abbreviation={team.abbreviation}
+                        />
+                      ))}
+                    </>
                   ))}
               </>
             )
           }
           {currentTab === Tabs.LeaveTypes && (
             <>
-              <HeaderSection text={Tabs.LeaveTypes} />
               {getLeaveTypes.isSuccess &&
                 getLeaveTypes?.data &&
-                getLeaveTypes.data.map((leaveType, index) => (
-                  <LeaveTypesDetails
-                    leaveName={leaveType.leaveName}
-                    leaveDescription={leaveType.leaveDescription}
-                    maxLeavesPerYear={leaveType.maxLeavesPerYear}
-                    abbreviation={leaveType.abbreviation}
-                    monthlyRestriction={leaveType.monthlyRestriction}
-                    additionalInfo={leaveType.additionalInfo}
-                    key={index}
-                  />
+                (isEditing ? (
+                  <p>Edit form</p>
+                ) : isAdding ? (
+                  <p>Add form</p>
+                ) : (
+                  <>
+                    <HeaderSection text={Tabs.LeaveTypes} />
+                    {getLeaveTypes.data.map((leaveType, index) => (
+                      <LeaveTypesDetails
+                        leaveName={leaveType.leaveName}
+                        leaveDescription={leaveType.leaveDescription}
+                        maxLeavesPerYear={leaveType.maxLeavesPerYear}
+                        abbreviation={leaveType.abbreviation}
+                        monthlyRestriction={leaveType.monthlyRestriction}
+                        additionalInfo={leaveType.additionalInfo}
+                        key={index}
+                      />
+                    ))}
+                  </>
                 ))}
             </>
           )}

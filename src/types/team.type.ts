@@ -17,6 +17,8 @@ export type CreateTeamDto = {
   abbreviation: string;
 };
 
+export type UpdateTeamDto = Partial<CreateTeamDto>;
+
 export type JoinTeamDto = {
   teamId: string;
   body: { userId: string };

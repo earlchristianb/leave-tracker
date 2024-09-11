@@ -57,12 +57,30 @@ export const POST = withAuth(async (req: NextRequest, context: Context) => {
     );
 
     return NextResponse.json(teamResponse.data, { status: 200 });
-  } catch (error) {
-    return NextResponse.json(
+  } catch (error: any) {
+    return NextResponse.json(error.response.data, { status: 400 });
+  }
+});
+
+export const PATCH = withAuth(async (req: NextRequest, context: Context) => {
+  const { params } = context;
+  const teamId = params.teamId;
+  const { getAccessTokenRaw, getUser } = getKindeServerSession();
+  const accessToken = await getAccessTokenRaw();
+  const body = req.json();
+  try {
+    const teamResponse = await axios.patch(
+      `${process.env.BACKEND_URL}/team/${teamId}`,
+      body,
       {
-        error: true,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       },
-      { status: 400 },
     );
+
+    return NextResponse.json(teamResponse.data, { status: 200 });
+  } catch (error: any) {
+    return NextResponse.json(error.response.data, { status: 400 });
   }
 });
