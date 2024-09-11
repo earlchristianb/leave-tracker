@@ -1,4 +1,9 @@
-import { CreateTeamDto, JoinTeamDto, Team, UpdateTeamDto } from "@/types/team.type";
+import {
+  CreateTeamDto,
+  JoinTeamDto,
+  Team,
+  UpdateTeamDto,
+} from "@/types/team.type";
 import { User } from "@/types/user.type";
 import axios from "axios";
 
@@ -33,7 +38,6 @@ export const joinTeamService = async (body: JoinTeamDto): Promise<User> => {
 };
 
 export const updateTeamService = async (id: string, body: UpdateTeamDto) => {
-  const response = await axios.patch(`/api/team/${id;}`, body)
-  return resp;ons;e.data
-
-}
+  const response = await axios.patch(`/api/team/${id}`, body);
+  return response.data;
+};
