@@ -3,11 +3,11 @@ import React, { useState } from "react";
 
 import Input from "../../Input";
 import Button from "../../Button";
-import { useCreateOrgLeaveTypeMutation } from "@/hooks/organization/organizationQueries";
+import { useUpdateOrgLeaveTypeMutation } from "@/hooks/organization/organizationQueries";
 import { useCreateToast } from "@/providers/ToastProvider";
 import { ToastMessages, ToastType } from "@/constants/toast.constants";
 import Form from "../../Form";
-import { CreateOrgLeaveTypeDto, OrgLeaveType } from "@/types/organization.type";
+import { OrgLeaveType } from "@/types/organization.type";
 import { UseQueryResult } from "@tanstack/react-query";
 import { User } from "@/types/user.type";
 
@@ -18,21 +18,36 @@ const emptyOrgLeaveForm = {
   maxLeavesPerYear: 5,
   additionalInfo: "",
   monthlyRestriction: 0,
+  created_at: "",
+  updated_at: "",
+  organization: {
+    id: "",
+    inviteCode: "",
+    name: "",
+    description: "",
+    driveLink: "",
+    created_at: "",
+    updated_at: "",
+    teams: [],
+  },
+  id: "",
 };
 
-const CreateOrgLeaveTypeForm = ({
+const UpdateLeaveTypeForm = ({
   currentUser,
-  orgLeaveTypeQuery,
-  showHint = false,
+  leaveTypeList,
 }: {
   currentUser: UseQueryResult<User, Error>;
-  orgLeaveTypeQuery: UseQueryResult<OrgLeaveType[], Error>;
-  showHint?: boolean;
+  leaveTypeList: OrgLeaveType[];
 }) => {
+  const [orgLeaveForm, setOrgLeaveForm] = useState<OrgLeaveType>(
+    leaveTypeList[0] || emptyOrgLeaveForm,
+  );
+  const [selectedLeaveType, setSelectedLeaveType] = useState<string>(
+    leaveTypeList.length ? leaveTypeList[0].id : "",
+  );
   const createToast = useCreateToast();
-
-  const [orgLeaveForm, setOrgLeaveForm] =
-    useState<CreateOrgLeaveTypeDto>(emptyOrgLeaveForm);
+  const updateOrgLeaveType = useUpdateOrgLeaveTypeMutation();
   const handleOrganizationFormChanges = (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -45,31 +60,73 @@ const CreateOrgLeaveTypeForm = ({
           : e.target.value,
     }));
   };
-  const createOrgLeaveTypeMutation = useCreateOrgLeaveTypeMutation();
-
+  const handleSelectedLeaveTypeChange = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
+    setSelectedLeaveType(e.target.value);
+    setOrgLeaveForm(
+      leaveTypeList.find((leaveType) => leaveType.id === e.target.value) ||
+        emptyOrgLeaveForm,
+    );
+  };
   console.log("FORM ORG LEAVE", orgLeaveForm);
-
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Form state", orgLeaveForm);
     console.log("submitting");
+
     try {
-      await createOrgLeaveTypeMutation.mutateAsync({
+      const {
+        monthlyRestriction,
+        isActive,
+        additionalInfo,
+        abbreviation,
+        leaveDescription,
+        leaveName,
+        maxLeavesPerYear,
+      } = orgLeaveForm;
+      await updateOrgLeaveType.mutateAsync({
         organizationId: currentUser.data?.organization?.id!,
-        body: orgLeaveForm,
+        leaveTypeId: selectedLeaveType,
+        body: {
+          monthlyRestriction,
+          additionalInfo,
+          abbreviation,
+          leaveDescription,
+          leaveName,
+          maxLeavesPerYear,
+          isActive,
+        },
       });
-      setOrgLeaveForm(emptyOrgLeaveForm);
-      createToast(ToastType.SUCCESS, ToastMessages.ORGANIZATION.SUCCESS_CREATE);
-    } catch (error) {
-      createToast(ToastType.ERROR, ToastMessages.ORGANIZATION.ERROR_CREATE);
+      createToast(ToastType.SUCCESS, ToastMessages.ORGANIZATION.SUCCESS_UPDATE);
+    } catch (error: any) {
+      createToast(
+        ToastType.ERROR,
+        Array.isArray(error?.response.data.message)
+          ? error.response.data.message[0]
+          : error.response.data.message,
+      );
     }
   };
 
   return (
     <Form onSubmit={handleFormSubmit}>
-      <h1 className="text-xl">
-        Create a Type of Leave for {currentUser.data?.organization?.name}
-      </h1>
+      <h1 className="text-xl">Update Leave Type</h1>
+      <div className="flex flex-col justify-start space-y-2 p-2">
+        <label>Select Leave Type</label>
+        <select
+          className="w-full border-b border-darker p-1 dark:bg-gray-400"
+          value={selectedLeaveType}
+          onChange={handleSelectedLeaveTypeChange}
+        >
+          {leaveTypeList.map((leaveType: OrgLeaveType) => (
+            <option key={leaveType.id} value={leaveType.id}>
+              {leaveType.leaveName}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div className="flex flex-col justify-start space-y-2 p-2">
         <label>Name*</label>
         <Input
@@ -134,31 +191,9 @@ const CreateOrgLeaveTypeForm = ({
           type="number"
         />
       </div>
-      {orgLeaveTypeQuery.data &&
-        (orgLeaveTypeQuery.data.length ? (
-          <p className="flex flex-wrap items-center space-x-2 md:flex-nowrap">
-            <span> Type created:</span>
-            {orgLeaveTypeQuery.data.map((leaveType: OrgLeaveType) => (
-              <span
-                key={leaveType.id}
-                className="rounded bg-light p-2 dark:bg-dark"
-              >
-                {leaveType.leaveName}
-              </span>
-            ))}
-            {showHint && (
-              <span className="animate-bounce font-semibold">
-                You can create more Leave Types before proceeding to team
-                section
-              </span>
-            )}
-          </p>
-        ) : (
-          <div>No Leave Type yet</div>
-        ))}
       <Button type="submit">Submit</Button>
     </Form>
   );
 };
 
-export default CreateOrgLeaveTypeForm;
+export default UpdateLeaveTypeForm;

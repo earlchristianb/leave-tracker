@@ -67,7 +67,8 @@ export const PATCH = withAuth(async (req: NextRequest, context: Context) => {
   const teamId = params.teamId;
   const { getAccessTokenRaw, getUser } = getKindeServerSession();
   const accessToken = await getAccessTokenRaw();
-  const body = req.json();
+  const body = await req.json();
+  console.log(body);
   try {
     const teamResponse = await axios.patch(
       `${process.env.BACKEND_URL}/team/${teamId}`,
@@ -78,6 +79,8 @@ export const PATCH = withAuth(async (req: NextRequest, context: Context) => {
         },
       },
     );
+
+    console.log("Update team api hit", teamResponse.data);
 
     return NextResponse.json(teamResponse.data, { status: 200 });
   } catch (error: any) {

@@ -3,6 +3,7 @@ import {
   Organization,
   OrgLeaveType,
   UpdateOrganizationDto,
+  UpdateOrgLeaveTypeDto,
 } from "@/types/organization.type";
 import { User } from "@/types/user.type";
 import axios from "axios";
@@ -62,6 +63,18 @@ export const updateOrganizationService = async ({
   const response = await axios.patch(
     `/api/organization/${organizationId}`,
     data,
+  );
+  return response.data;
+};
+
+export const updateOrgLeaveTypeService = async (
+  organizationId: string,
+  leaveTypeId: string,
+  body: UpdateOrgLeaveTypeDto,
+): Promise<OrgLeaveType> => {
+  const response = await axios.patch(
+    `/api/leaveType/${organizationId}?leaveId=${leaveTypeId}`,
+    body,
   );
   return response.data;
 };

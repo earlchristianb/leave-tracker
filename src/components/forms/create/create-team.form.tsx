@@ -17,9 +17,11 @@ const teamEmptyState = {
 const CreateTeamForm = ({
   currentUser,
   teamsQuery,
+  showHint = false,
 }: {
   currentUser: UseQueryResult<User, Error>;
   teamsQuery: UseQueryResult<Team[], Error>;
+  showHint?: boolean;
 }) => {
   const [teamForm, setTeamForm] = useState(teamEmptyState);
   const createToast = useCreateToast();
@@ -84,16 +86,15 @@ const CreateTeamForm = ({
           <p className="flex flex-wrap items-center space-x-2 md:flex-nowrap">
             <span> Teams created:</span>
             {teamsQuery.data.map((team: Team) => (
-              <span
-                key={team.id}
-                className="rounded bg-gray-500 p-2 dark:bg-gray-200"
-              >
+              <span key={team.id} className="rounded bg-light p-2 dark:bg-dark">
                 {team.name}
               </span>
             ))}
-            <span className="animate-bounce font-semibold">
-              You can create more teams before joining a team
-            </span>
+            {showHint && (
+              <span className="animate-bounce font-semibold">
+                You can create more teams before joining a team
+              </span>
+            )}
           </p>
         ) : (
           <div>No Team created yet</div>

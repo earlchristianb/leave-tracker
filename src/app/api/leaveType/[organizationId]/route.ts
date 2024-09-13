@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  withAuth,
   getKindeServerSession,
+  withAuth,
 } from "@kinde-oss/kinde-auth-nextjs/server";
 import axios from "axios";
+
 type Context = {
   params: {
     organizationId: string;
@@ -57,5 +58,29 @@ export const POST = withAuth(async (req: NextRequest, context: any) => {
       },
       { status: 400 },
     );
+  }
+});
+
+export const PATCH = withAuth(async (req: NextRequest, context: any) => {
+  const body = await req.json();
+  const { getAccessTokenRaw } = getKindeServerSession();
+  const accessToken = await getAccessTokenRaw();
+  const organizationId = context.params.organizationId;
+  const { searchParams } = new URL(req.url);
+  const leaveId = searchParams.get("leaveId");
+  try {
+    const orgLeaveResponse = await axios.patch(
+      `${process.env.BACKEND_URL}/organization/${organizationId}/leave/${leaveId}`,
+      body,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+
+    return NextResponse.json(orgLeaveResponse.data, { status: 200 });
+  } catch (error: any) {
+    return NextResponse.json(error.response.data, { status: 400 });
   }
 });

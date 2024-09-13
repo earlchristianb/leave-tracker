@@ -13,7 +13,13 @@ const teamEmptyState = {
   name: "",
   description: "",
   abbreviation: "",
-};
+  isActive: true,
+  organizationId: "",
+  createdAt: "",
+  updatedAt: "",
+  id: "",
+  users: [],
+} as Team;
 const UpdateTeamForm = ({
   currentUser,
   teamList,
@@ -22,7 +28,7 @@ const UpdateTeamForm = ({
   teamList: Team[];
 }) => {
   // const [teams, setTeams] = useState<Team[]>(teamList);
-  const [teamForm, setTeamForm] = useState(teamEmptyState);
+  const [teamForm, setTeamForm] = useState(teamList[0] ?? teamEmptyState);
   const [selectedTeam, setSelectedTeam] = useState<string>(
     teamList.length ? teamList[0].id : "",
   );
@@ -49,11 +55,13 @@ const UpdateTeamForm = ({
         console.log("Form state", teamForm);
         console.log("submitting");
         try {
+          const { name, abbreviation, description } = teamForm;
           const updateTeamRes = await updateTeam.mutateAsync({
             organizationId: currentUser.data?.organization?.id!,
-            body: teamForm,
+            body: { name, abbreviation, description },
             id: selectedTeam,
           });
+          console.log("Response AFTER ADDING TEAM", updateTeamRes);
 
           createToast(ToastType.SUCCESS, ToastMessages.TEAM.SUCCESS_UPDATE);
           console.log("Response AFTER ADDING TEAM", updateTeamRes);
@@ -67,8 +75,9 @@ const UpdateTeamForm = ({
         }
       }}
     >
-      <h1 className="text-xl">Update team</h1>
+      <h1 className="text-xl">Update Team</h1>
       <div className="flex flex-col justify-start space-y-2 p-2">
+        <label>Select Team</label>
         <select
           className="w-full border-b border-darker p-1 dark:bg-gray-400"
           value={selectedTeam}
@@ -80,6 +89,8 @@ const UpdateTeamForm = ({
             </option>
           ))}
         </select>
+      </div>
+      <div className="flex flex-col justify-start space-y-2 p-2">
         <label>Name*</label>
         <Input
           name="name"

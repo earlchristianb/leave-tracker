@@ -43,3 +43,5 @@ export type CreateOrgLeaveTypeDto = {
   isActive?: boolean;
   additionalInfo?: string;
 };
+
+export type UpdateOrgLeaveTypeDto = Partial<CreateOrgLeaveTypeDto>;

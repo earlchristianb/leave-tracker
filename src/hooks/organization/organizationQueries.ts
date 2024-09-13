@@ -7,6 +7,7 @@ import {
   getOrgLeaveTypeService,
   joinOrganizationService,
   updateOrganizationService,
+  updateOrgLeaveTypeService,
 } from "@/services/organization.services";
 import {
   CreateOrganizationDto,
@@ -14,6 +15,7 @@ import {
   Organization,
   OrgLeaveType,
   UpdateOrganizationDto,
+  UpdateOrgLeaveTypeDto,
 } from "@/types/organization.type";
 import { User } from "@/types/user.type";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -105,6 +107,41 @@ export function useCreateOrgLeaveTypeMutation() {
         ["orgleaveType", variables.organizationId],
         (oldData: OrgLeaveType[]) => {
           return [...oldData, data];
+        },
+      );
+    },
+  });
+}
+
+export function useUpdateOrgLeaveTypeMutation() {
+  return useMutation({
+    mutationFn: async (variables: {
+      organizationId: string;
+      leaveTypeId: string;
+      body: UpdateOrgLeaveTypeDto;
+    }) =>
+      await updateOrgLeaveTypeService(
+        variables.organizationId,
+        variables.leaveTypeId,
+        variables.body,
+      ),
+    async onSuccess(
+      data: OrgLeaveType,
+      variables: {
+        organizationId: string;
+        leaveTypeId: string;
+        body: UpdateOrgLeaveTypeDto;
+      },
+    ) {
+      await queryClient.setQueryData(
+        ["orgleaveType", variables.organizationId],
+        (oldData: OrgLeaveType[]) => {
+          return oldData.map((leaveType) => {
+            if (leaveType.id === data.id) {
+              return data;
+            }
+            return leaveType;
+          });
         },
       );
     },

@@ -135,6 +135,7 @@ function OnboardingPage() {
                       <CreateOrgLeaveTypeForm
                         currentUser={currentUser}
                         orgLeaveTypeQuery={orgLeaveTypeQuery}
+                        showHint={true}
                       />
                       <Button onClick={handleGoToTeamSection}>
                         Go to Team section
@@ -151,6 +152,7 @@ function OnboardingPage() {
                     <CreateTeamForm
                       currentUser={currentUser}
                       teamsQuery={teamsQuery}
+                      showHint={true}
                     />
                   )}
                   {!currentUserHasTeam && (

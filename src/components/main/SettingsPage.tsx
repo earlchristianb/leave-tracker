@@ -20,6 +20,8 @@ import LeaveTypesDetails from "@/components/details/LeaveTypesDetails";
 import UpdateOrganizationForm from "@/components/forms/update/update-organization.form";
 import UpdateTeamForm from "@/components/forms/update/update-team.form";
 import CreateTeamForm from "@/components/forms/create/create-team.form";
+import CreateOrgLeaveTypeForm from "@/components/forms/create/create-leavetype.form";
+import UpdateLeaveTypeForm from "@/components/forms/update/update-leavetype.form";
 
 const Tabs = {
   Organization: "Organization",
@@ -55,9 +57,11 @@ function SettingsPage() {
 
   const handleToggleEdit = () => {
     setIsEditing((prev) => !prev);
+    setIsAdding(false);
   };
   const handleToggleAdd = () => {
     setIsAdding((prev) => !prev);
+    setIsEditing(false);
   };
   if (isFetching) {
     return (
@@ -98,10 +102,13 @@ function SettingsPage() {
                 Leave Types
               </button>
             </nav>
-            <div>
+            <div className="space-x-2">
               {(currentTab === Tabs.Teams ||
                 currentTab === Tabs.LeaveTypes) && (
-                <Button onClick={handleToggleAdd}>
+                <Button
+                  onClick={handleToggleAdd}
+                  className={`${isAdding ? "bg-darkest dark:bg-lighter dark:text-darker" : "bg-lighter dark:bg-darkest dark:text-lighter"}`}
+                >
                   <p className="flex items-center space-x-2 text-sm">
                     <FontAwesomeIcon icon={faAdd} />
                     <span>Add</span>
@@ -109,7 +116,10 @@ function SettingsPage() {
                 </Button>
               )}
 
-              <Button onClick={handleToggleEdit}>
+              <Button
+                onClick={handleToggleEdit}
+                className={`${isEditing ? "bg-darkest dark:bg-lighter dark:text-darker" : "bg-lighter dark:bg-darkest dark:text-lighter"}`}
+              >
                 <p className="flex items-center space-x-2 text-sm">
                   <FontAwesomeIcon icon={faEdit} />
                   <span>Edit</span>
@@ -187,9 +197,15 @@ function SettingsPage() {
               {getLeaveTypes.isSuccess &&
                 getLeaveTypes?.data &&
                 (isEditing ? (
-                  <p>Edit form</p>
+                  <UpdateLeaveTypeForm
+                    currentUser={currentUser}
+                    leaveTypeList={getLeaveTypes.data}
+                  />
                 ) : isAdding ? (
-                  <p>Add form</p>
+                  <CreateOrgLeaveTypeForm
+                    currentUser={currentUser}
+                    orgLeaveTypeQuery={getLeaveTypes}
+                  />
                 ) : (
                   <>
                     <HeaderSection text={Tabs.LeaveTypes} />
