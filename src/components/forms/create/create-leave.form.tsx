@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Form from "../../Form";
-import { useCreateLeaveMutation } from "@/hooks/leave/leave.Queries";
+import { useCreateLeaveMutation } from "@/hooks/leave/leaveQueries";
 import { UseQueryResult } from "@tanstack/react-query";
 import { User } from "@/types/user.type";
 import { useCreateToast } from "@/providers/ToastProvider";

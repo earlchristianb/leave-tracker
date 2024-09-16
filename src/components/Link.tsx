@@ -3,6 +3,7 @@ import React from "react";
 import Link from "next/link";
 import cn from "@/utils/cn";
 import { usePathname } from "next/navigation";
+
 const NavLink = ({
   className,
   children,

@@ -1,21 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  withAuth,
   getKindeServerSession,
+  withAuth,
 } from "@kinde-oss/kinde-auth-nextjs/server";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 
 export const GET = withAuth(async (req: NextRequest, context: any) => {
   const { getAccessTokenRaw } = getKindeServerSession();
   const accessToken = await getAccessTokenRaw();
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get("userId");
+  const leaveTypeId = searchParams.get("leaveTypeId");
+  const skip = searchParams.get("skip");
+  const limit = searchParams.get("limit");
+
   try {
     const leaveResponse = await axios.get(
-      userId
-        ? `${process.env.BACKEND_URL}/leave?userId=${userId}`
-        : `${process.env.BACKEND_URL}/leave`,
-
+      `${process.env.BACKEND_URL}/leave?userId=${userId ?? ""}&leaveTypeId=${leaveTypeId ?? ""}&skip=${skip ?? ""}&limit=${limit ?? ""}`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,

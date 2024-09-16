@@ -4,8 +4,15 @@ import axios from "axios";
 const BASE_URL = "/api/user";
 export const getAllUserService = async (
   organizationId: string,
-): Promise<User[]> => {
-  return (await axios.get(`${BASE_URL}?organizationId=${organizationId}`)).data;
+  skip: number,
+  limit: number,
+  search: string,
+): Promise<{ data: User[]; total: number }> => {
+  return (
+    await axios.get(
+      `${BASE_URL}?organizationId=${organizationId}&skip=${skip}&limit=${limit}&search=${search}`,
+    )
+  ).data;
 };
 
 export const getUserService = async (id: string | undefined): Promise<User> => {

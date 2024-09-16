@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  withAuth,
   getKindeServerSession,
+  withAuth,
 } from "@kinde-oss/kinde-auth-nextjs/server";
 import axios from "axios";
 
@@ -10,9 +10,13 @@ export const GET = withAuth(async (req: NextRequest, context: any) => {
   const accessToken = await getAccessTokenRaw();
   const { searchParams } = new URL(req.url);
   const organizationId = searchParams.get("organizationId");
+  const search = searchParams.get("search");
+  const skip = searchParams.get("skip");
+  const limit = searchParams.get("limit");
+
   try {
     const userResponse = await axios.get(
-      `${process.env.BACKEND_URL}/user?organizationId=${organizationId}`,
+      `${process.env.BACKEND_URL}/user?organizationId=${organizationId}&skip=${skip ?? ""}&limit=${limit ?? ""}&search=${search ?? ""}`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,

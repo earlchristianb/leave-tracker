@@ -1,11 +1,10 @@
-import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 export async function middleware(request: NextRequest) {
-  const { isAuthenticated } = getKindeServerSession();
+  const { isAuthenticated, getAccessTokenRaw } = getKindeServerSession();
   const isUserAuthenticated = await isAuthenticated();
-
   console.log("middleware is isAuthenticated", isUserAuthenticated);
   const pathname = request.nextUrl.pathname;
   const hostname = request.nextUrl.hostname;

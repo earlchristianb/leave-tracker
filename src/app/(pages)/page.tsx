@@ -3,11 +3,11 @@ import { redirect } from "next/navigation";
 import Homepage from "@/components/main/HomePage";
 
 export default async function Home() {
-  const { isAuthenticated } = getKindeServerSession();
-
+  const { isAuthenticated, getUser } = getKindeServerSession();
+  const user = await getUser();
   if (!(await isAuthenticated())) {
     redirect("/login");
   }
 
-  return <Homepage />;
+  return <Homepage userId={user?.id!} />;
 }

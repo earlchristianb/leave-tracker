@@ -3,12 +3,9 @@ import LeavesTable from "@/components/LeavesTable";
 import { PieChart } from "@/components/Piechart";
 import TopBar from "@/components/TopBar";
 import UserTable from "@/components/UserTable";
-import { useGetAllLeavesQuery } from "@/hooks/leave/leave.Queries";
+import { useGetAllLeavesQuery } from "@/hooks/leave/leaveQueries";
 import { useGetOrgLeaveTypeQuery } from "@/hooks/organization/organizationQueries";
-import {
-  useCurrentUserQuery,
-  useGetAllUserByOrgQuery,
-} from "@/hooks/user/userQueries";
+import { useCurrentUserQuery } from "@/hooks/user/userQueries";
 import { colorList } from "@/utils/colorlist";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { useIsFetching } from "@tanstack/react-query";
@@ -16,7 +13,8 @@ import React, { useMemo } from "react";
 import PageContainer from "@/components/PageContainer";
 import SectionContainer from "@/components/SectionContainer";
 
-function DashboardPage() {
+// eslint-disable-next-line react/display-name
+const DashboardPage = React.memo(() => {
   const { getUser } = useKindeBrowserClient();
   const isFetching = useIsFetching();
   const getAllLeaves = useGetAllLeavesQuery();
@@ -24,11 +22,6 @@ function DashboardPage() {
   const getLeaveTypes = useGetOrgLeaveTypeQuery(
     currentUser.data?.organization?.id,
   );
-
-  const getAllUsers = useGetAllUserByOrgQuery(
-    currentUser.data?.organization?.id,
-  );
-
   const leaveLabels = useMemo(() => {
     return getLeaveTypes.data?.map((leaveType) => leaveType.leaveName);
   }, [getLeaveTypes.data]);
@@ -40,7 +33,6 @@ function DashboardPage() {
         .flat();
     });
   };
-
   const countCurrentYearLeaves = (leaveData: any[], currentYear: number) => {
     return leaveData.map((dates) => {
       return (
@@ -50,10 +42,9 @@ function DashboardPage() {
       );
     });
   };
-
   const leaveData = useMemo(() => {
-    return countLeaves(leaveLabels || [], getAllLeaves.data || []);
-  }, [leaveLabels, getAllLeaves.data]);
+    return countLeaves(leaveLabels || [], getAllLeaves.data?.data || []);
+  }, [leaveLabels, getAllLeaves.data?.data]);
   const filteredLeaveData = useMemo(() => {
     return (leaveData || []).map((data) => (data ? data.length : 0));
   }, [leaveData]);
@@ -77,14 +68,13 @@ function DashboardPage() {
       },
     ],
   };
-
-  if (isFetching) {
-    return (
-      <div className="flex h-full w-full flex-col justify-center dark:bg-darker md:h-screen md:items-center">
-        <p className="animate-bounce">Loading...</p>
-      </div>
-    );
-  }
+  // if (isFetching) {
+  //   return (
+  //     <div className="flex h-full w-full flex-col justify-center dark:bg-darker md:h-screen md:items-center">
+  //       <p className="animate-bounce">Loading...</p>
+  //     </div>
+  //   );
+  // }
   return (
     <PageContainer>
       <TopBar>Dashboard</TopBar>
@@ -125,7 +115,7 @@ function DashboardPage() {
                       {currentYearLeaveCounts &&
                         leaveLabels &&
                         leaveLabels.map((labels, index) => (
-                          <div className="w-fit p-4">
+                          <div className="w-fit p-4" key={index}>
                             <p className="text-nowrap">{labels}</p>
                             <p className="text-center">
                               {currentYearLeaveCounts[index]}
@@ -140,18 +130,14 @@ function DashboardPage() {
           </div>
           <div className="w-full space-y-4">
             <h1 className="text-xl">Leaves</h1>
-            <div className="w-full overflow-x-auto shadow-xl">
-              <LeavesTable getLeaves={getAllLeaves} isAdmin={true} />
-            </div>
+            <LeavesTable getLeaveTypes={getLeaveTypes} isAdmin={true} />
             <h1 className="text-xl">Employees</h1>
-            <div className="w-full overflow-x-auto shadow-xl">
-              <UserTable users={getAllUsers} />
-            </div>
+            <UserTable organizationId={currentUser.data?.organization?.id!} />
           </div>
         </div>
       </SectionContainer>
     </PageContainer>
   );
-}
+});
 
 export default DashboardPage;

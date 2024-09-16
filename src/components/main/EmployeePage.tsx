@@ -2,7 +2,7 @@
 import LeavesTable from "@/components/LeavesTable";
 import { PieChart } from "@/components/Piechart";
 import TopBar from "@/components/TopBar";
-import { useGetLeavesByUserQuery } from "@/hooks/leave/leave.Queries";
+import { useGetLeavesByUserQuery } from "@/hooks/leave/leaveQueries";
 import { useGetOrgLeaveTypeQuery } from "@/hooks/organization/organizationQueries";
 import { useGetUserQuery } from "@/hooks/user/userQueries";
 import { colorList } from "@/utils/colorlist";
@@ -43,8 +43,8 @@ function EmployeePage({ userId }: { userId: string }) {
   };
 
   const leaveData = useMemo(() => {
-    return countLeaves(leaveLabels || [], leavesByEmployee.data || []);
-  }, [leaveLabels, leavesByEmployee.data]);
+    return countLeaves(leaveLabels || [], leavesByEmployee.data?.data || []);
+  }, [leaveLabels, leavesByEmployee.data?.data]);
   const filteredLeaveData = useMemo(() => {
     return (leaveData || []).map((data) => (data ? data.length : 0));
   }, [leaveData]);
@@ -123,7 +123,7 @@ function EmployeePage({ userId }: { userId: string }) {
                       {currentYearLeaveCounts &&
                         leaveLabels &&
                         leaveLabels.map((labels, index) => (
-                          <div className="w-fit p-4">
+                          <div className="w-fit p-4" key={index}>
                             <p className="text-nowrap">{labels}</p>
                             <p className="text-center">
                               {currentYearLeaveCounts[index]}
@@ -137,7 +137,11 @@ function EmployeePage({ userId }: { userId: string }) {
             </div>
           </div>
           <div className="min-h-[30%] w-full overflow-x-auto">
-            <LeavesTable getLeaves={leavesByEmployee} isAdmin={true} />
+            <LeavesTable
+              getLeaveTypes={getLeaveTypes}
+              userId={userId}
+              isAdmin={true}
+            />
           </div>
         </div>
       </SectionContainer>

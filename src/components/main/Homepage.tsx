@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCurrentUserQuery } from "@/hooks/user/userQueries";
 import TopBar from "../TopBar";
 import Image from "next/image";
-import { useGetLeavesByUserQuery } from "@/hooks/leave/leave.Queries";
+import { useGetLeavesByUserQuery } from "@/hooks/leave/leaveQueries";
 import { useGetOrgLeaveTypeQuery } from "@/hooks/organization/organizationQueries";
 import { useCreateToast } from "@/providers/ToastProvider";
 import LeavesTable from "../LeavesTable";
@@ -22,13 +22,12 @@ const Tabs = {
   CreateLeaves: "Create Leaves",
 } as const;
 type TabType = (typeof Tabs)[keyof typeof Tabs];
-const Homepage = () => {
+const Homepage = ({ userId }: { userId: string }) => {
   const { isAuthenticated, getUser, isLoading } = useKindeBrowserClient();
   const router = useRouter();
   const [currentTab, setCurrentTab] = useState<TabType>(Tabs.Leaves);
   const user = getUser();
   const createToast = useCreateToast();
-
   const currentUser = useCurrentUserQuery(user?.id, user);
   const getLeavesByUser = useGetLeavesByUserQuery(currentUser.data?.id);
   const getLeaveTypes = useGetOrgLeaveTypeQuery(
@@ -68,8 +67,8 @@ const Homepage = () => {
   };
 
   const leaveData = useMemo(() => {
-    return countLeaves(leaveLabels || [], getLeavesByUser.data || []);
-  }, [leaveLabels, getLeavesByUser.data]);
+    return countLeaves(leaveLabels || [], getLeavesByUser.data?.data || []);
+  }, [leaveLabels, getLeavesByUser.data?.data]);
   const filteredLeaveData = useMemo(() => {
     return (leaveData || []).map((data) => (data ? data.length : 0));
   }, [leaveData]);
@@ -83,6 +82,16 @@ const Homepage = () => {
   const backgroundColor = useMemo(() => {
     return colorList.slice(0, leaveLabels?.length);
   }, [leaveLabels?.length]);
+
+  const pieChartData = {
+    labels: leaveLabels || [],
+    datasets: [
+      {
+        data: filteredLeaveData,
+        backgroundColor: backgroundColor || [],
+      },
+    ],
+  };
 
   useEffect(() => {
     if (!isAuthenticated && !isLoading) {
@@ -106,24 +115,6 @@ const Homepage = () => {
   ) {
     router.push("/onboarding");
   }
-
-  // const currentPage = 1;
-  // const itemsPerPage = 10;
-  // const correctIndex = (currentPage - 1) * itemsPerPage + index + 1;
-
-  console.log("Leave labels", leaveLabels);
-  console.log("Leave data", leaveData);
-  console.log("Current Year leave counts", currentYearLeaveCounts);
-  console.log("All leaves", leaveDataLength);
-  const pieChartData = {
-    labels: leaveLabels || [],
-    datasets: [
-      {
-        data: filteredLeaveData,
-        backgroundColor: backgroundColor || [],
-      },
-    ],
-  };
 
   return (
     <PageContainer>
@@ -178,7 +169,7 @@ const Homepage = () => {
                       {currentYearLeaveCounts &&
                         leaveLabels &&
                         leaveLabels.map((labels, index) => (
-                          <div className="w-fit p-4">
+                          <div className="w-fit p-4" key={index}>
                             <p className="text-nowrap">{labels}</p>
                             <p className="text-center">
                               {currentYearLeaveCounts[index]}
@@ -213,9 +204,13 @@ const Homepage = () => {
               <span>File a Leave</span>
             </button>
           </div>
-          <div className="min-h-[30%] w-full overflow-x-auto">
+          <div className="w-full overflow-x-auto">
             {currentTab === "Leaves" ? (
-              <LeavesTable getLeaves={getLeavesByUser} isAdmin={false} />
+              <LeavesTable
+                getLeaveTypes={getLeaveTypes}
+                userId={userId}
+                isAdmin={false}
+              />
             ) : (
               <CreateLeaveForm
                 currentUser={currentUser}
