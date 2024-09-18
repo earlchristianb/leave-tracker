@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  withAuth,
   getKindeServerSession,
+  withAuth,
 } from "@kinde-oss/kinde-auth-nextjs/server";
 import axios from "axios";
 
@@ -19,13 +19,8 @@ export const GET = withAuth(async (req: NextRequest, context: any) => {
       },
     );
     return NextResponse.json(organizationResponse.data, { status: 200 });
-  } catch (error) {
-    return NextResponse.json(
-      {
-        error: true,
-      },
-      { status: 400 },
-    );
+  } catch (error: any) {
+    return NextResponse.json(error.response.data, { status: 400 });
   }
 });
 
@@ -46,12 +41,7 @@ export const POST = withAuth(async (req: NextRequest, context: any) => {
     );
 
     return NextResponse.json(organizationResponse.data, { status: 200 });
-  } catch (error) {
-    return NextResponse.json(
-      {
-        error: true,
-      },
-      { status: 400 },
-    );
+  } catch (error: any) {
+    return NextResponse.json(error.response.data, { status: 400 });
   }
 });

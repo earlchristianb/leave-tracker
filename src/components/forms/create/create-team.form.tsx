@@ -46,8 +46,13 @@ const CreateTeamForm = ({
           setTeamForm(teamEmptyState);
           createToast(ToastType.SUCCESS, ToastMessages.TEAM.SUCCESS_CREATE);
           console.log("Response AFTER ADDING TEAM", addTeamRes);
-        } catch (error) {
-          createToast(ToastType.ERROR, ToastMessages.TEAM.ERROR_CREATE);
+        } catch (error: any) {
+          createToast(
+            ToastType.ERROR,
+            Array.isArray(error?.response.data.message)
+              ? error.response.data.message[0]
+              : error.response.data.message,
+          );
         }
       }}
     >

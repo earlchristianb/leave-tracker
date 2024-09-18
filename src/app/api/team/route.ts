@@ -29,13 +29,8 @@ export const GET = withAuth(async (req: NextRequest) => {
     );
 
     return NextResponse.json(teamResponse.data, { status: 200 });
-  } catch (error) {
-    return NextResponse.json(
-      {
-        error: true,
-      },
-      { status: 400 },
-    );
+  } catch (error: any) {
+    return NextResponse.json(error.response.data, { status: 400 });
   }
 });
 
@@ -60,7 +55,7 @@ export const POST = withAuth(async (req: NextRequest, context: Context) => {
       },
     );
     return NextResponse.json(teamResponse.data, { status: 200 });
-  } catch (error) {
-    return NextResponse.json({ error: true }, { status: 400 });
+  } catch (error: any) {
+    return NextResponse.json(error.response.data, { status: 400 });
   }
 });

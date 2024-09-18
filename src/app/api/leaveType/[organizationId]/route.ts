@@ -51,13 +51,8 @@ export const POST = withAuth(async (req: NextRequest, context: any) => {
     );
 
     return NextResponse.json(orgLeaveResponse.data, { status: 200 });
-  } catch (error) {
-    return NextResponse.json(
-      {
-        error: true,
-      },
-      { status: 400 },
-    );
+  } catch (error: any) {
+    return NextResponse.json(error.response.data, { status: 400 });
   }
 });
 

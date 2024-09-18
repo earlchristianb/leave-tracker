@@ -59,9 +59,9 @@ const CreateOrgLeaveTypeForm = ({
         body: orgLeaveForm,
       });
       setOrgLeaveForm(emptyOrgLeaveForm);
-      createToast(ToastType.SUCCESS, ToastMessages.ORGANIZATION.SUCCESS_CREATE);
+      createToast(ToastType.SUCCESS, ToastMessages.ORGLEAVETYPE.SUCCESS_CREATE);
     } catch (error) {
-      createToast(ToastType.ERROR, ToastMessages.ORGANIZATION.ERROR_CREATE);
+      createToast(ToastType.ERROR, ToastMessages.ORGLEAVETYPE.ERROR_CREATE);
     }
   };
 

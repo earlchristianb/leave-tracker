@@ -141,7 +141,7 @@ const LeavesTable = memo(
                     onDoubleClick={() => {}}
                   >
                     <p
-                      className={`${!(index % 2 == 0) && `bg-transparent`} w-10 px-2 text-left`}
+                      className={`${!(index % 2 == 0) && `bg-transparent`} w-10 px-2 text-left group-hover:bg-light group-hover:text-white group-hover:dark:bg-slate-100 group-hover:dark:text-darker`}
                     >
                       {(currentPage - 1) * itemsPerPage + (index + 1)}
                     </p>

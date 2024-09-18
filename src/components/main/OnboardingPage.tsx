@@ -99,7 +99,7 @@ function OnboardingPage() {
   return (
     <div className="flex h-full w-full flex-col dark:bg-darkest md:h-screen">
       <TopBar>New User Onboarding</TopBar>
-      <div className="flex h-full w-full flex-col items-center justify-center dark:bg-darkest">
+      <div className="flex h-full w-full flex-col items-center justify-center dark:bg-dark">
         <div className="flex h-[90%] w-full flex-col justify-center space-y-4 p-2 xl:w-[80%]">
           {currentUser.data?.accountSetup ? (
             <div className="flex h-full w-full flex-col items-center justify-center text-center">
@@ -116,7 +116,9 @@ function OnboardingPage() {
                   <span
                     key={tab}
                     className={`cursor-pointer ${
-                      currentTab === tab ? "text-blue-500" : "text-gray-400"
+                      currentTab === tab
+                        ? "font-bold text-black"
+                        : "text-gray-400"
                     }`}
                   >
                     {tab} {">"}

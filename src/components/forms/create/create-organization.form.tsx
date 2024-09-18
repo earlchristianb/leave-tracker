@@ -33,8 +33,13 @@ const CreateOrganizationForm = () => {
     try {
       await createOrgMutation.mutateAsync(organizationForm);
       createToast(ToastType.SUCCESS, ToastMessages.ORGANIZATION.SUCCESS_CREATE);
-    } catch (error) {
-      createToast(ToastType.ERROR, ToastMessages.ORGANIZATION.ERROR_CREATE);
+    } catch (error: any) {
+      createToast(
+        ToastType.ERROR,
+        Array.isArray(error?.response.data.message)
+          ? error.response.data.message[0]
+          : error.response.data.message,
+      );
     }
   };
 
