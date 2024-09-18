@@ -13,8 +13,7 @@ const UserTable = ({ organizationId }: { organizationId: string }) => {
   const router = useRouter();
   const isFetching = useIsFetching();
   const handleGoToEmployeeProfile = (userId: string) => {
-    // console.log("Go to employee profile");
-    router.push("/employee/" + userId);
+    window.open("/employee/" + userId, "_blank");
   };
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(resetToFirstPage);
@@ -86,11 +85,11 @@ const UserTable = ({ organizationId }: { organizationId: string }) => {
               users.data?.data?.length &&
               users.data?.data?.map((user: User, index: number) => (
                 <div
-                  key={index}
                   className="group flex w-full p-2 text-left transition duration-300 hover:cursor-pointer"
                   onDoubleClick={() => {
                     handleGoToEmployeeProfile(user.id);
                   }}
+                  key={index}
                 >
                   <p
                     className={`${!(index % 2 == 0) && `bg-transparent`} w-10 px-2 text-left`}

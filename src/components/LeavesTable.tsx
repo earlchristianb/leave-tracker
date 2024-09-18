@@ -132,9 +132,7 @@ const LeavesTable = memo(
               </div>
               {isFetching ? (
                 <div>Loading...</div>
-              ) : (
-                leavesData &&
-                leavesData.length &&
+              ) : leavesData && leavesData.length > 0 ? (
                 leavesData.map((leave: Leave, index: number) => (
                   // eslint-disable-next-line react/jsx-key
                   <div
@@ -171,6 +169,8 @@ const LeavesTable = memo(
                     </Column>
                   </div>
                 ))
+              ) : (
+                <div>No Record Found</div>
               )}
             </div>
           </div>

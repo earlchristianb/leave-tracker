@@ -137,7 +137,7 @@ const CreateOrgLeaveTypeForm = ({
       {orgLeaveTypeQuery.data &&
         (orgLeaveTypeQuery.data.length ? (
           <p className="flex flex-wrap items-center space-x-2 md:flex-nowrap">
-            <span> Type created:</span>
+            <span> Leave Types created:</span>
             {orgLeaveTypeQuery.data.map((leaveType: OrgLeaveType) => (
               <span
                 key={leaveType.id}

@@ -77,6 +77,7 @@ const Paginate = ({
           </li>
         )}
       </ul>
+      <p className="w-full text-center text-sm">Records found: {totalItems}</p>
     </div>
   );
 };
